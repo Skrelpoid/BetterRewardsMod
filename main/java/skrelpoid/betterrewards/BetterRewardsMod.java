@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
-import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
@@ -101,7 +100,7 @@ public class BetterRewardsMod {
 
 	public static void initShopItems(ShopScreen shopScreen) {
 		float x = 200;
-		float y = Settings.HEIGHT + 150;
+		float y = 950;
 		if (isGettingRewards && !alreadyGotRewards) {
 			shopItems = new ArrayList<AbstractShopItem>();
 			shopItems.add(new RerollShopItem(shopScreen, x, y));
@@ -260,6 +259,12 @@ public class BetterRewardsMod {
 			for (AbstractShopItem i : shopItems) {
 				i.price = MathUtils.round(i.price * multiplier);
 			}
+		}
+	}
+
+	public static void fixBaseModIssue(String[] str) {
+		if (isGettingRewards && !alreadyGotRewards && str[0].startsWith("betterrewardsmod:")) {
+			str[0] = str[0].substring(str[0].indexOf(":"));
 		}
 	}
 
