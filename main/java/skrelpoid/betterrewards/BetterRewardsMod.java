@@ -1,0 +1,268 @@
+package skrelpoid.betterrewards;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Objects;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
+import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.events.AbstractEvent;
+import com.megacrit.cardcrawl.helpers.RelicLibrary;
+import com.megacrit.cardcrawl.relics.AbstractRelic;
+import com.megacrit.cardcrawl.relics.RedCirclet;
+import com.megacrit.cardcrawl.rooms.ShopRoom;
+import com.megacrit.cardcrawl.screens.stats.RunData;
+import com.megacrit.cardcrawl.shop.ShopScreen;
+import com.megacrit.cardcrawl.shop.StoreRelic;
+import com.megacrit.cardcrawl.vfx.InfiniteSpeechBubble;
+
+import skrelpoid.betterrewards.events.BetterRewardsInfoEvent;
+import skrelpoid.betterrewards.shop.AbstractShopItem;
+import skrelpoid.betterrewards.shop.RandomBossRelicItem;
+import skrelpoid.betterrewards.shop.RandomRareRelicItem;
+import skrelpoid.betterrewards.shop.RerollShopItem;
+
+@SpireInitializer
+public class BetterRewardsMod {
+
+	public static boolean canGetRewards = false;
+	public static boolean isGettingRewards = false;
+	public static boolean alreadyGotRewards = false;
+	public static RunData lastRun;
+
+	public static RunHistory runHistory;
+	public static ArrayList<AbstractShopItem> shopItems;
+
+	public static final Logger logger = LogManager.getLogger(BetterRewardsMod.class.getName());
+
+	public static void initialize() {
+		runHistory = new RunHistory();
+	}
+
+	public static void setIsGettingRewards(boolean b) {
+		isGettingRewards = b;
+		alreadyGotRewards = false;
+	}
+
+	public static void startRewards() {
+		ShopRoom room = new ShopRoom();
+		AbstractDungeon.currMapNode.room = room;
+		room.onPlayerEntry();
+		AbstractDungeon.player.gold = BetterRewardsMod.lastRun.score;
+	}
+
+	public static boolean shouldShowInfo() {
+		return isGettingRewards && !alreadyGotRewards;
+	}
+
+	public static void showInfo() {
+		// copied from NeowEvent.dismissBubble()
+		for (com.megacrit.cardcrawl.vfx.AbstractGameEffect e : AbstractDungeon.effectList) {
+			if ((e instanceof InfiniteSpeechBubble)) {
+				((InfiniteSpeechBubble) e).dismiss();
+			}
+		}
+		logger.info("Showing BetterRewardsInfoEvent");
+		AbstractEvent info = new BetterRewardsInfoEvent();
+		AbstractDungeon.getCurrRoom().event = info;
+		AbstractDungeon.getCurrRoom().event.onEnterRoom();
+	}
+
+	public static void checkCanGetRewards(String playerName) {
+		lastRun = runHistory.getLastRunByCharacter(playerName);
+		canGetRewards = lastRun != null && lastRun.score > 0;
+		if (canGetRewards) {
+			logger.info(
+					playerName + " had a score of " + lastRun.score + " last run, Therefore he they can get rewards.");
+		} else {
+			logger.info(playerName + " can not get rewards.");
+		}
+	}
+
+	public static void refreshRunHistory() {
+		runHistory.refreshData();
+	}
+
+	public static void finishedRewards() {
+		if (isGettingRewards && !alreadyGotRewards) {
+			logger.info("Finished Rewards");
+			alreadyGotRewards = true;
+			AbstractDungeon.player.gold = 0;
+		}
+	}
+
+	public static void initShopItems(ShopScreen shopScreen) {
+		float x = 200;
+		float y = Settings.HEIGHT + 150;
+		if (isGettingRewards && !alreadyGotRewards) {
+			shopItems = new ArrayList<AbstractShopItem>();
+			shopItems.add(new RerollShopItem(shopScreen, x, y));
+			y -= 150;
+			shopItems.add(new RandomRareRelicItem(shopScreen, x, y));
+			y -= 150;
+			shopItems.add(new RandomBossRelicItem(shopScreen, x, y));
+			y -= 150;
+		}
+	}
+
+	public static void updateShopItems(ShopScreen shopScreen) {
+		if (isGettingRewards && !alreadyGotRewards) {
+			try {
+				Field rugY = ShopScreen.class.getDeclaredField("rugY");
+				rugY.setAccessible(true);
+				for (AbstractShopItem i : shopItems) {
+					i.update(rugY.getFloat(shopScreen));
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public static void renderShopItems(SpriteBatch sb) {
+		if (isGettingRewards && !alreadyGotRewards) {
+			for (AbstractShopItem i : shopItems) {
+				i.render(sb);
+			}
+		}
+	}
+
+	public static AbstractRelic returnRandomScreenlessBossRelic() {
+		AbstractRelic relic = null;
+		int tries = 0;
+		do {
+			tries++;
+			relic = RelicLibrary.getRelic(AbstractDungeon.returnRandomRelicKey(AbstractRelic.RelicTier.BOSS))
+					.makeCopy();
+		} while ((Objects.equals(relic.relicId, "Calling Bell") || Objects.equals(relic.relicId, "Tiny House")
+				|| Objects.equals(relic.relicId, "Orrery")) && tries < 1000);
+		if (tries >= 1000) {
+			relic = new RedCirclet();
+		}
+		return relic;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void rerollShop(ShopScreen shopScreen) {
+		try {
+
+			Field colorlessCards = ShopScreen.class.getDeclaredField("colorlessCards");
+			colorlessCards.setAccessible(true);
+			colorlessCards.set(shopScreen, rollColorlessCards());
+			Field coloredCards = ShopScreen.class.getDeclaredField("coloredCards");
+			coloredCards.setAccessible(true);
+			coloredCards.set(shopScreen, rollColoredCards());
+			Method initCards = ShopScreen.class.getDeclaredMethod("initCards", new Class<?>[] {});
+			initCards.setAccessible(true);
+			initCards.invoke(shopScreen, new Object[] {});
+
+			ArrayList<StoreRelic> relics = new ArrayList<StoreRelic>();
+			Field shopRelics = ShopScreen.class.getDeclaredField("relics");
+			shopRelics.setAccessible(true);
+			relics.addAll((ArrayList<StoreRelic>) shopRelics.get(shopScreen));
+			// Add rerolled Items back to relicPool
+			for (StoreRelic sr : relics) {
+				AbstractRelic relic = sr.relic;
+				if (relic != null && !AbstractDungeon.player.hasRelic(relic.relicId)) {
+					ArrayList<String> tmp = new ArrayList<String>();
+					switch (relic.tier) {
+					case COMMON:
+						tmp.add(relic.relicId.toString());
+						tmp.addAll(AbstractDungeon.commonRelicPool);
+						AbstractDungeon.commonRelicPool = tmp;
+						break;
+					case UNCOMMON:
+						tmp.add(relic.relicId.toString());
+						tmp.addAll(AbstractDungeon.uncommonRelicPool);
+						AbstractDungeon.uncommonRelicPool = tmp;
+						break;
+					case RARE:
+						tmp.add(relic.relicId.toString());
+						tmp.addAll(AbstractDungeon.rareRelicPool);
+						AbstractDungeon.rareRelicPool = tmp;
+						break;
+					case SHOP:
+						tmp.add(relic.relicId.toString());
+						tmp.addAll(AbstractDungeon.shopRelicPool);
+						AbstractDungeon.shopRelicPool = tmp;
+						break;
+					default:
+						logger.info("Unexpected Relic Tier: " + relic.tier);
+						break;
+					}
+				}
+			}
+			Method initRelics = ShopScreen.class.getDeclaredMethod("initRelics", new Class<?>[] {});
+			initRelics.setAccessible(true);
+			initRelics.invoke(shopScreen, new Object[] {});
+
+			Method potions = ShopScreen.class.getDeclaredMethod("initPotions", new Class<?>[] {});
+			potions.setAccessible(true);
+			potions.invoke(shopScreen, new Object[] {});
+
+			shopScreen.purgeAvailable = true;
+
+			for (AbstractShopItem i : shopItems) {
+				i.setVisible(true);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	// From Merchant
+	private static ArrayList<AbstractCard> rollColoredCards() {
+		ArrayList<AbstractCard> cards = new ArrayList<AbstractCard>();
+		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
+				.makeCopy());
+
+		AbstractCard addCard = AbstractDungeon
+				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true).makeCopy();
+		while (Objects.equals(addCard.cardID, cards.get(cards.size() - 1).cardID)) {
+			addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
+					.makeCopy();
+		}
+		cards.add(addCard);
+
+		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+				.makeCopy());
+		addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+				.makeCopy();
+		while (Objects.equals(addCard.cardID, cards.get(cards.size() - 1).cardID)) {
+			addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+					.makeCopy();
+		}
+		cards.add(addCard);
+
+		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.POWER, true)
+				.makeCopy());
+		return cards;
+	}
+
+	// From Merchant
+	private static ArrayList<AbstractCard> rollColorlessCards() {
+		ArrayList<AbstractCard> cards = new ArrayList<AbstractCard>();
+		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.UNCOMMON).makeCopy());
+		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.RARE).makeCopy());
+		return cards;
+	}
+
+	public static void discountShopItems(float multiplier) {
+		if (isGettingRewards && !alreadyGotRewards) {
+			for (AbstractShopItem i : shopItems) {
+				i.price = MathUtils.round(i.price * multiplier);
+			}
+		}
+	}
+
+	// FIX rewardsscreen in shop sometimes forces player to leave for now
+	// fixed by not giving relics that show reward screen
+}
