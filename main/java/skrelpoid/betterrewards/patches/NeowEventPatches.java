@@ -6,14 +6,14 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.events.RoomEventDialog;
-import com.megacrit.cardcrawl.gashapon.NeowEvent;
+import com.megacrit.cardcrawl.neow.NeowEvent;
 
 import skrelpoid.betterrewards.BetterRewardsMod;
 
 public class NeowEventPatches {
 
 	// Only for Testing
-	// @SpirePatch(cls = "com.megacrit.cardcrawl.gashapon.NeowEvent", method =
+	// @SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method =
 	// "ctor", paramtypes = "boolean")
 	public static class ForceBlessing {
 		@SpireInsertPatch(rloc = 1)
@@ -22,7 +22,7 @@ public class NeowEventPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.gashapon.NeowEvent", method = "ctor", paramtypes = "boolean")
+	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "ctor", paramtypes = "boolean")
 	public static class AddBetterRewardsButton {
 		@SpireInsertPatch(rloc = 45)
 		public static void Insert(Object o, boolean b) {
@@ -32,17 +32,14 @@ public class NeowEventPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.gashapon.NeowEvent", method = "buttonEffect")
+	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "buttonEffect")
 	public static class MaybeStartRewards {
 		public static void Prefix(Object o, int buttonPressed) {
 			try {
 				Field screenNumField = NeowEvent.class.getDeclaredField("screenNum");
 				screenNumField.setAccessible(true);
 				int sn = screenNumField.getInt(o);
-				// screenNum = 0, 1 or 2 mean talk option, 99 is leave option
-				// (edge case if save and continue after getting neowreward),
-				// buttonPressed = 1 is
-				// the better draft button
+				// buttonPressed = 1 is the better draft button
 				if (buttonPressed == 1 && acceptableScreenNum(sn)) {
 					BetterRewardsMod.setIsGettingRewards(true);
 					// screenNum = 99 is the default value for leave event. This
@@ -59,8 +56,9 @@ public class NeowEventPatches {
 			}
 		}
 
+		// screenNum = 0, 1 or 2 mean talk option
 		private static boolean acceptableScreenNum(int sn) {
-			return sn == 99 || sn == 0 || sn == 1 || sn == 2;
+			return sn == 0 || sn == 1 || sn == 2;
 		}
 	}
 

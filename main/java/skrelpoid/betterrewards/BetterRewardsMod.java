@@ -14,6 +14,8 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
+import com.megacrit.cardcrawl.helpers.Hitbox;
+import com.megacrit.cardcrawl.helpers.InputHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.RedCirclet;
@@ -52,10 +54,14 @@ public class BetterRewardsMod {
 	}
 
 	public static void startRewards() {
-		ShopRoom room = new ShopRoom();
-		AbstractDungeon.currMapNode.room = room;
-		room.onPlayerEntry();
-		AbstractDungeon.player.gold = BetterRewardsMod.lastRun.score;
+		try {
+			ShopRoom room = new ShopRoom();
+			AbstractDungeon.currMapNode.room = room;
+			room.onPlayerEntry();
+			AbstractDungeon.player.gold = BetterRewardsMod.lastRun.score;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static boolean shouldShowInfo() {
@@ -100,7 +106,7 @@ public class BetterRewardsMod {
 
 	public static void initShopItems(ShopScreen shopScreen) {
 		float x = 200;
-		float y = 950;
+		float y = 850;
 		if (isGettingRewards && !alreadyGotRewards) {
 			shopItems = new ArrayList<AbstractShopItem>();
 			shopItems.add(new RerollShopItem(shopScreen, x, y));
@@ -262,9 +268,19 @@ public class BetterRewardsMod {
 		}
 	}
 
+	// According to BaseMod documentation, this should work(it doesn't)
 	public static void fixBaseModIssue(String[] str) {
 		if (isGettingRewards && !alreadyGotRewards && str[0].startsWith("betterrewardsmod:")) {
-			str[0] = str[0].substring(str[0].indexOf(":"));
+			str[0] = "sts" + str[0].substring(str[0].indexOf(":"));
+		}
+	}
+
+	// Hack so that when mouse is released over proceed when in special shop, it
+	// actually opens the map (for some reason hitbox didnt register click
+	// before
+	public static void fixProceedHitbox(Hitbox hitbox) {
+		if (isGettingRewards && !alreadyGotRewards && hitbox.hovered && InputHelper.justReleasedClickLeft) {
+			hitbox.clicked = true;
 		}
 	}
 
