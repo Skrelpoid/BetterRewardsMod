@@ -27,14 +27,14 @@ public abstract class AbstractShopItem {
 	protected Texture texture;
 	protected ArrayList<PowerTip> tips;
 	public int price;
+	public int realPrice;
+	private float discount;
 	protected float x;
 	protected float y;
 	protected float scale;
 	protected boolean isVisible;
 	protected Hitbox hb;
 	protected ShopScreen shopScreen;
-	// TODO add compatibility with membership card and the courier (price
-	// reduction)
 
 	// Texture should be 128 by 128
 	public AbstractShopItem(ShopScreen shopScreen, String texPath, String name, String description, int cost, float x,
@@ -44,11 +44,18 @@ public abstract class AbstractShopItem {
 		tips = new ArrayList<PowerTip>();
 		tips.add(new PowerTip(name, description));
 		this.price = cost;
+		discount = 1;
+		applyDiscount(1);
 		isVisible = true;
 		hb = new Hitbox(120.0f * Settings.scale, 120.0f * Settings.scale);
 		this.x = x * Settings.scale;
 		this.y = y * Settings.scale;
 		this.scale = Settings.scale;
+	}
+
+	public void applyDiscount(float f) {
+		discount *= f;
+		realPrice = (int) (discount * price);
 	}
 
 	public void setVisible(boolean b) {
@@ -70,7 +77,7 @@ public abstract class AbstractShopItem {
 			if (!canBuy()) {
 				priceColor = Color.SALMON;
 			}
-			FontHelper.renderFontLeftTopAligned(sb, FontHelper.tipHeaderFont, Integer.toString(price),
+			FontHelper.renderFontLeftTopAligned(sb, FontHelper.tipHeaderFont, Integer.toString(realPrice),
 					hb.cX + PRICE_OFFSET_X, hb.cY + PRICE_OFFSET_Y, priceColor);
 		}
 
@@ -110,7 +117,7 @@ public abstract class AbstractShopItem {
 
 	private void tryPurchase() {
 		if (canBuy()) {
-			AbstractDungeon.player.loseGold(price);
+			AbstractDungeon.player.loseGold(realPrice);
 			CardCrawlGame.sound.play("SHOP_PURCHASE", 0.1F);
 			this.shopScreen.playBuySfx();
 			this.shopScreen.createSpeech(ShopScreen.getBuyMsg());
@@ -125,7 +132,7 @@ public abstract class AbstractShopItem {
 	}
 
 	public boolean canBuy() {
-		return AbstractDungeon.player.gold >= price;
+		return AbstractDungeon.player.gold >= realPrice;
 	}
 
 	protected abstract void onPurchase();

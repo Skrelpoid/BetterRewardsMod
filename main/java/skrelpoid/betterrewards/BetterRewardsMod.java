@@ -9,16 +9,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
-import com.megacrit.cardcrawl.helpers.Hitbox;
-import com.megacrit.cardcrawl.helpers.InputHelper;
+import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
-import com.megacrit.cardcrawl.relics.RedCirclet;
+import com.megacrit.cardcrawl.relics.CallingBell;
+import com.megacrit.cardcrawl.relics.Circlet;
+import com.megacrit.cardcrawl.relics.Orrery;
+import com.megacrit.cardcrawl.relics.TinyHouse;
 import com.megacrit.cardcrawl.rooms.ShopRoom;
 import com.megacrit.cardcrawl.screens.stats.RunData;
 import com.megacrit.cardcrawl.shop.ShopScreen;
@@ -27,6 +28,7 @@ import com.megacrit.cardcrawl.vfx.InfiniteSpeechBubble;
 
 import skrelpoid.betterrewards.events.BetterRewardsInfoEvent;
 import skrelpoid.betterrewards.shop.AbstractShopItem;
+import skrelpoid.betterrewards.shop.LootboxShopItem;
 import skrelpoid.betterrewards.shop.RandomBossRelicItem;
 import skrelpoid.betterrewards.shop.RandomRareRelicItem;
 import skrelpoid.betterrewards.shop.RerollShopItem;
@@ -35,6 +37,7 @@ import skrelpoid.betterrewards.shop.RerollShopItem;
 public class BetterRewardsMod {
 
 	public static boolean canGetRewards = false;
+	public static boolean alreadyStartedRewards = false;
 	public static boolean isGettingRewards = false;
 	public static boolean alreadyGotRewards = false;
 	public static RunData lastRun;
@@ -51,21 +54,22 @@ public class BetterRewardsMod {
 	public static void setIsGettingRewards(boolean b) {
 		isGettingRewards = b;
 		alreadyGotRewards = false;
+		alreadyStartedRewards = false;
 	}
 
 	public static void startRewards() {
-		try {
-			ShopRoom room = new ShopRoom();
-			AbstractDungeon.currMapNode.room = room;
-			room.onPlayerEntry();
-			AbstractDungeon.player.gold = BetterRewardsMod.lastRun.score;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		alreadyStartedRewards = true;
+		AbstractDungeon.dialog.clear();
+		GenericEventDialog.clearAllDialogs();
+		GenericEventDialog.clearRemainingOptions();
+		ShopRoom room = new ShopRoom();
+		AbstractDungeon.currMapNode.room = room;
+		room.onPlayerEntry();
+		AbstractDungeon.player.gold = BetterRewardsMod.lastRun.score;
 	}
 
 	public static boolean shouldShowInfo() {
-		return isGettingRewards && !alreadyGotRewards;
+		return isGettingRewards && !alreadyStartedRewards && !alreadyGotRewards;
 	}
 
 	public static void showInfo() {
@@ -97,7 +101,7 @@ public class BetterRewardsMod {
 	}
 
 	public static void finishedRewards() {
-		if (isGettingRewards && !alreadyGotRewards) {
+		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards) {
 			logger.info("Finished Rewards");
 			alreadyGotRewards = true;
 			AbstractDungeon.player.gold = 0;
@@ -111,6 +115,8 @@ public class BetterRewardsMod {
 			shopItems = new ArrayList<AbstractShopItem>();
 			shopItems.add(new RerollShopItem(shopScreen, x, y));
 			y -= 150;
+			shopItems.add(new LootboxShopItem(shopScreen, x, y));
+			y -= 150;
 			shopItems.add(new RandomRareRelicItem(shopScreen, x, y));
 			y -= 150;
 			shopItems.add(new RandomBossRelicItem(shopScreen, x, y));
@@ -119,7 +125,7 @@ public class BetterRewardsMod {
 	}
 
 	public static void updateShopItems(ShopScreen shopScreen) {
-		if (isGettingRewards && !alreadyGotRewards) {
+		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards) {
 			try {
 				Field rugY = ShopScreen.class.getDeclaredField("rugY");
 				rugY.setAccessible(true);
@@ -133,7 +139,7 @@ public class BetterRewardsMod {
 	}
 
 	public static void renderShopItems(SpriteBatch sb) {
-		if (isGettingRewards && !alreadyGotRewards) {
+		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards) {
 			for (AbstractShopItem i : shopItems) {
 				i.render(sb);
 			}
@@ -147,12 +153,12 @@ public class BetterRewardsMod {
 			tries++;
 			relic = RelicLibrary.getRelic(AbstractDungeon.returnRandomRelicKey(AbstractRelic.RelicTier.BOSS))
 					.makeCopy();
-		} while ((Objects.equals(relic.relicId, "Calling Bell") || Objects.equals(relic.relicId, "Tiny House")
-				|| Objects.equals(relic.relicId, "Orrery")) && tries < 1000);
+		} while ((relic instanceof CallingBell || relic instanceof TinyHouse || relic instanceof Orrery)
+				&& tries < 1000);
 		if (tries >= 1000) {
-			relic = new RedCirclet();
+			relic = new Circlet();
 		}
-		return relic;
+		return relic.makeCopy();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -261,26 +267,17 @@ public class BetterRewardsMod {
 	}
 
 	public static void discountShopItems(float multiplier) {
-		if (isGettingRewards && !alreadyGotRewards) {
+		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards) {
 			for (AbstractShopItem i : shopItems) {
-				i.price = MathUtils.round(i.price * multiplier);
+				i.applyDiscount(multiplier);
 			}
 		}
 	}
 
 	// According to BaseMod documentation, this should work(it doesn't)
 	public static void fixBaseModIssue(String[] str) {
-		if (isGettingRewards && !alreadyGotRewards && str[0].startsWith("betterrewardsmod:")) {
+		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards && str[0].startsWith("betterrewardsmod:")) {
 			str[0] = "sts" + str[0].substring(str[0].indexOf(":"));
-		}
-	}
-
-	// Hack so that when mouse is released over proceed when in special shop, it
-	// actually opens the map (for some reason hitbox didnt register click
-	// before
-	public static void fixProceedHitbox(Hitbox hitbox) {
-		if (isGettingRewards && !alreadyGotRewards && hitbox.hovered && InputHelper.justReleasedClickLeft) {
-			hitbox.clicked = true;
 		}
 	}
 
