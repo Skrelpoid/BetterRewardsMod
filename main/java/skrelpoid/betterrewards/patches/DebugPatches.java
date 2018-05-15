@@ -12,7 +12,8 @@ public class DebugPatches {
 	// @SpirePatch(cls = "com.megacrit.cardcrawl.helpers.RelicLibrary", method =
 	// "getRelic")
 	public static class DebugGetRelic {
-		public static void Prefix(Object o1) {
+		@SpireInsertPatch(rloc = 2)
+		public static void Insert(Object o1) {
 			String key = (String) o1;
 			logger.info("RelicLibrary.getRelic with " + key);
 

@@ -2,8 +2,8 @@
   "modid": "betterrewardsmod",
   "name": "BetterRewards",
   "author_list": ["Skrelpoid"],
-  "description": "(Does not need BaseMod) Adds an option to Neow where instead of getting standard rewards, you get rewards based on the score of your last run",
-  "version": "1.0.0",
+  "description": "(Does not need BaseMod) Adds an option to Neow where instead of getting standard rewards, you get rewards based on the score of your last run in a special shop.",
+  "version": "1.2.0",
   "sts_version": "05-10-2018",
   "mts_version": "2.6.0"
 }
