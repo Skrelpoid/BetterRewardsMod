@@ -6,5 +6,7 @@ It adds a choice at Neow not to get a reward but instead get to a special shop w
 
 Currently, this mod does not need BaseMod.
 
+Like all mods, my Mod needs Mod the Spire: https://github.com/kiooeht/ModTheSpire
+
 Download: 
 https://github.com/Skrelpoid/BetterRewardsMod/releases
