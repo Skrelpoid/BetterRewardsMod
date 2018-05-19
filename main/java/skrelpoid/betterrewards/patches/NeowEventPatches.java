@@ -13,7 +13,7 @@ import skrelpoid.betterrewards.BetterRewardsMod;
 public class NeowEventPatches {
 
 	// Only for Testing
-	// @SpirePatch(cls = "com.megacrit.cardcrawl.gashapon.NeowEvent", method =
+	// @SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method =
 	// "ctor", paramtypes = "boolean")
 	public static class ForceBlessing {
 		@SpireInsertPatch(rloc = 1)
@@ -26,8 +26,9 @@ public class NeowEventPatches {
 	public static class AddBetterRewardsButton {
 		@SpireInsertPatch(rloc = 45)
 		public static void Insert(Object o, boolean b) {
+			BetterRewardsMod.isNeowDone = b;
 			if (!Settings.isDailyRun && !b) {
-				RoomEventDialog.addDialogOption("[BetterRewards]");
+				RoomEventDialog.addDialogOption("[Turn Around]");
 			}
 		}
 	}
@@ -39,10 +40,7 @@ public class NeowEventPatches {
 				Field screenNumField = NeowEvent.class.getDeclaredField("screenNum");
 				screenNumField.setAccessible(true);
 				int sn = screenNumField.getInt(o);
-				// screenNum = 0, 1 or 2 mean talk option, 99 is leave option
-				// (edge case if save and continue after getting neowreward),
-				// buttonPressed = 1 is
-				// the better draft button
+				// buttonPressed = 1 is the better rewards button
 				if (buttonPressed == 1 && acceptableScreenNum(sn)) {
 					BetterRewardsMod.setIsGettingRewards(true);
 					// screenNum = 99 is the default value for leave event. This
@@ -59,8 +57,9 @@ public class NeowEventPatches {
 			}
 		}
 
+		// screenNum = 0, 1 or 2 mean talk option
 		private static boolean acceptableScreenNum(int sn) {
-			return sn == 99 || sn == 0 || sn == 1 || sn == 2;
+			return sn == 0 || sn == 1 || sn == 2;
 		}
 	}
 

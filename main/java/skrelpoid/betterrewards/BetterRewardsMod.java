@@ -29,7 +29,6 @@ import com.megacrit.cardcrawl.vfx.InfiniteSpeechBubble;
 import skrelpoid.betterrewards.events.BetterRewardsInfoEvent;
 import skrelpoid.betterrewards.shop.AbstractShopItem;
 import skrelpoid.betterrewards.shop.LootboxShopItem;
-import skrelpoid.betterrewards.shop.RandomBossRelicItem;
 import skrelpoid.betterrewards.shop.RandomRareRelicItem;
 import skrelpoid.betterrewards.shop.RerollShopItem;
 
@@ -44,6 +43,8 @@ public class BetterRewardsMod {
 
 	public static RunHistory runHistory;
 	public static ArrayList<AbstractShopItem> shopItems;
+	public static boolean isNeowDone;
+	public static int playerGold;
 
 	public static final Logger logger = LogManager.getLogger(BetterRewardsMod.class.getName());
 
@@ -65,7 +66,6 @@ public class BetterRewardsMod {
 		ShopRoom room = new ShopRoom();
 		AbstractDungeon.currMapNode.room = room;
 		room.onPlayerEntry();
-		AbstractDungeon.player.gold = BetterRewardsMod.lastRun.score;
 	}
 
 	public static boolean shouldShowInfo() {
@@ -89,8 +89,7 @@ public class BetterRewardsMod {
 		lastRun = runHistory.getLastRunByCharacter(playerName);
 		canGetRewards = lastRun != null && lastRun.score > 0;
 		if (canGetRewards) {
-			logger.info(
-					playerName + " had a score of " + lastRun.score + " last run, Therefore he they can get rewards.");
+			logger.info(playerName + " had a score of " + lastRun.score + " last run, Therefore they can get rewards.");
 		} else {
 			logger.info(playerName + " can not get rewards.");
 		}
@@ -104,7 +103,7 @@ public class BetterRewardsMod {
 		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards) {
 			logger.info("Finished Rewards");
 			alreadyGotRewards = true;
-			AbstractDungeon.player.gold = 0;
+			AbstractDungeon.player.gold = playerGold;
 		}
 	}
 
@@ -119,8 +118,9 @@ public class BetterRewardsMod {
 			y -= 150;
 			shopItems.add(new RandomRareRelicItem(shopScreen, x, y));
 			y -= 150;
-			shopItems.add(new RandomBossRelicItem(shopScreen, x, y));
-			y -= 150;
+
+			// shopItems.add(new RandomBossRelicItem(shopScreen, x, y));
+			// y -= 150;
 		}
 	}
 

@@ -14,6 +14,7 @@ import com.megacrit.cardcrawl.helpers.PowerTip;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
+import com.megacrit.cardcrawl.relics.BlackBlood;
 import com.megacrit.cardcrawl.relics.Circlet;
 import com.megacrit.cardcrawl.relics.RedCirclet;
 import com.megacrit.cardcrawl.relics.SpiritPoop;
@@ -127,6 +128,9 @@ public class LootboxShopItem extends AbstractShopItem {
 		int reward = bossRelic;
 		if (roll < reward) {
 			AbstractRelic relic = BetterRewardsMod.returnRandomScreenlessBossRelic();
+			if (relic instanceof BlackBlood) {
+				player.loseRelic("Burning Blood");
+			}
 			AbstractDungeon.getCurrRoom().spawnRelicAndObtain(Settings.WIDTH / 2, Settings.HEIGHT / 2, relic);
 			logger.info("bossrelic");
 			displayLastRoll("You got a Boss Relic: " + relic.name + ".");
@@ -168,35 +172,50 @@ public class LootboxShopItem extends AbstractShopItem {
 		}
 		reward += removeRandomCard;
 		if (roll < reward) {
-			AbstractCard card = getRandomDeckCard();
-			String name = card.name;
-			AbstractDungeon.effectList.add(new PurgeCardEffect(card));
-			player.masterDeck.removeCard(card);
-			logger.info("removeRandomCard");
-			displayLastRoll("You lost a Card from your Deck: " + name);
+			AbstractCard card = getRandomDeckCard(true);
+			if (card != null) {
+				String name = card.name;
+				AbstractDungeon.effectList.add(new PurgeCardEffect(card));
+				player.masterDeck.removeCard(card);
+				logger.info("removeRandomCard");
+				displayLastRoll("You lost a Card from your Deck: " + name);
+			} else {
+				logger.info("unable to removeRandomCard");
+				displayLastRoll("No card to remove :(");
+			}
 			return;
 		}
 		reward += transform;
 		if (roll < reward) {
-			AbstractCard card = getRandomDeckCard();
-			String oldName = card.name;
-			player.masterDeck.removeCard(card);
-			AbstractDungeon.transformCard(card);
-			AbstractCard transformedCard = AbstractDungeon.getTransformedCard();
-			AbstractDungeon.effectsQueue
-					.add(new ShowCardAndObtainEffect(transformedCard, Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
-			String transformedName = transformedCard.name;
-			logger.info("transform");
-			displayLastRoll("A Card from your Deck was transformed: " + oldName + " -> " + transformedName + ".");
+			AbstractCard card = getRandomDeckCard(true);
+			if (card != null) {
+				String oldName = card.name;
+				player.masterDeck.removeCard(card);
+				AbstractDungeon.transformCard(card);
+				AbstractCard transformedCard = AbstractDungeon.getTransformedCard();
+				AbstractDungeon.effectsQueue.add(
+						new ShowCardAndObtainEffect(transformedCard, Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
+				String transformedName = transformedCard.name;
+				logger.info("transform");
+				displayLastRoll("A Card from your Deck was transformed: " + oldName + " -> " + transformedName + ".");
+			} else {
+				logger.info("unable to transform");
+				displayLastRoll("No card to transform :(");
+			}
 			return;
 		}
 		reward += removeRandomRelic;
 		if (roll < reward) {
-			AbstractRelic relic = player.relics.get(rng.random(player.relics.size() - 1));
-			String name = relic.name;
-			player.loseRelic(relic.relicId);
-			logger.info("removeRandomRelic");
-			displayLastRoll("You lost a relic: " + name + ".");
+			if (player.relics != null && player.relics.size() > 0) {
+				AbstractRelic relic = player.relics.get(rng.random(player.relics.size() - 1));
+				String name = relic.name;
+				player.loseRelic(relic.relicId);
+				logger.info("removeRandomRelic");
+				displayLastRoll("You lost a relic: " + name + ".");
+			} else {
+				logger.info("unable to removeRandomRelic");
+				displayLastRoll("No relic to remove :(");
+			}
 			return;
 		}
 		reward += takeDamage;
@@ -242,8 +261,16 @@ public class LootboxShopItem extends AbstractShopItem {
 		displayLastRoll("You got a Relic: " + relic.name + ".");
 	}
 
-	private AbstractCard getRandomDeckCard() {
-		ArrayList<AbstractCard> deck = AbstractDungeon.player.masterDeck.group;
+	private AbstractCard getRandomDeckCard(boolean purge) {
+		ArrayList<AbstractCard> deck = null;
+		if (purge) {
+			deck = AbstractDungeon.player.masterDeck.getPurgeableCards().group;
+		} else {
+			deck = AbstractDungeon.player.masterDeck.group;
+		}
+		if (deck == null || deck.size() == 0) {
+			return null;
+		}
 		return deck.get(rng.random(deck.size() - 1));
 	}
 

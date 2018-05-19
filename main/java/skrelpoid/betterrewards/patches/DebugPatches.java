@@ -30,4 +30,5 @@ public class DebugPatches {
 			logger.info("named " + relic.name);
 		}
 	}
+
 }
