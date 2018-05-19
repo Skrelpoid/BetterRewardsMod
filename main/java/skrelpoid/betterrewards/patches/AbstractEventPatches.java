@@ -34,7 +34,7 @@ public class AbstractEventPatches {
 				public void edit(MethodCall m) throws CannotCompileException {
 					if (m.getMethodName().equals("open") && m.getClass().equals(DungeonMapScreen.class)) {
 						m.replace(
-								"{ if (skrelpoid.betterrewards.BetterRewards.shouldShowInfo()) { skrelpoid.betterrewards.BetterRewards.showInfo(); } else {com.megacrit.cardcrawl.dungeons.AbstractDungeon.dungeonMapScreen.open(false); } }");
+								"{ if (skrelpoid.betterrewards.BetterRewardsMod.shouldShowInfo()) { skrelpoid.betterrewards.BetterRewardsMod.showInfo(); } else {com.megacrit.cardcrawl.dungeons.AbstractDungeon.dungeonMapScreen.open(false); } }");
 
 					}
 				}

@@ -26,8 +26,9 @@ public class NeowEventPatches {
 	public static class AddBetterRewardsButton {
 		@SpireInsertPatch(rloc = 45)
 		public static void Insert(Object o, boolean b) {
+			BetterRewardsMod.isNeowDone = b;
 			if (!Settings.isDailyRun && !b) {
-				RoomEventDialog.addDialogOption("[BetterRewards]");
+				RoomEventDialog.addDialogOption("[Turn Around]");
 			}
 		}
 	}
@@ -39,7 +40,7 @@ public class NeowEventPatches {
 				Field screenNumField = NeowEvent.class.getDeclaredField("screenNum");
 				screenNumField.setAccessible(true);
 				int sn = screenNumField.getInt(o);
-				// buttonPressed = 1 is the better draft button
+				// buttonPressed = 1 is the better rewards button
 				if (buttonPressed == 1 && acceptableScreenNum(sn)) {
 					BetterRewardsMod.setIsGettingRewards(true);
 					// screenNum = 99 is the default value for leave event. This

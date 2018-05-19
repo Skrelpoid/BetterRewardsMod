@@ -6,6 +6,7 @@ import com.megacrit.cardcrawl.shop.ShopScreen;
 
 import skrelpoid.betterrewards.BetterRewardsMod;
 
+@Deprecated
 public class RandomBossRelicItem extends AbstractShopItem {
 
 	public RandomBossRelicItem(ShopScreen screen, float x, float y) {
