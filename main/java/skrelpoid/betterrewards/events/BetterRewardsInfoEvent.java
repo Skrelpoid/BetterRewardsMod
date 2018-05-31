@@ -95,6 +95,9 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 				AbstractDungeon.currMapNode.room.event = event;
 				event.onEnterRoom();
 				break;
+			default:
+				openMap();
+				break;
 			}
 			break;
 		case SCALED_GOLD:
@@ -105,11 +108,15 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 			case GET_MORE_GOLD:
 				getMoreGold();
 				break;
+			default:
+				BetterRewardsMod.startRewards();
 			}
 			break;
 		case FINISHED:
 			BetterRewardsMod.startRewards();
 			break;
+		default:
+			openMap();
 		}
 
 	}

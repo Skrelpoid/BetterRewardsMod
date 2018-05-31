@@ -28,6 +28,7 @@ public class NeowEventPatches {
 		public static void Insert(Object o, boolean b) {
 			BetterRewardsMod.isNeowDone = b;
 			if (!Settings.isDailyRun && !b) {
+				BetterRewardsMod.button = RoomEventDialog.optionList.size();
 				RoomEventDialog.addDialogOption("[Turn Around]");
 			}
 		}
@@ -41,7 +42,7 @@ public class NeowEventPatches {
 				screenNumField.setAccessible(true);
 				int sn = screenNumField.getInt(o);
 				// buttonPressed = 1 is the better rewards button
-				if (buttonPressed == 1 && acceptableScreenNum(sn)) {
+				if (buttonPressed == BetterRewardsMod.button && acceptableScreenNum(sn)) {
 					BetterRewardsMod.setIsGettingRewards(true);
 					// screenNum = 99 is the default value for leave event. This
 					// calls openMap, which is patched to start a BetterRewards

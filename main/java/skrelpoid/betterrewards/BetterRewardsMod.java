@@ -3,6 +3,7 @@ package skrelpoid.betterrewards;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,10 +17,7 @@ import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
-import com.megacrit.cardcrawl.relics.CallingBell;
 import com.megacrit.cardcrawl.relics.Circlet;
-import com.megacrit.cardcrawl.relics.Orrery;
-import com.megacrit.cardcrawl.relics.TinyHouse;
 import com.megacrit.cardcrawl.rooms.ShopRoom;
 import com.megacrit.cardcrawl.screens.stats.RunData;
 import com.megacrit.cardcrawl.shop.ShopScreen;
@@ -35,6 +33,9 @@ import skrelpoid.betterrewards.shop.RerollShopItem;
 @SpireInitializer
 public class BetterRewardsMod {
 
+	public static final String[] UNWANTED_SPECIAL_RELICS = { "Circlet", "Red Circlet", "Spirit Poop" };
+	public static final String[] SCREEN_BOSS_RELICS = { "Calling Bell", "Orrery", "Tiny House" };
+
 	public static boolean canGetRewards = false;
 	public static boolean alreadyStartedRewards = false;
 	public static boolean isGettingRewards = false;
@@ -45,6 +46,7 @@ public class BetterRewardsMod {
 	public static ArrayList<AbstractShopItem> shopItems;
 	public static boolean isNeowDone;
 	public static int playerGold;
+	public static int button;
 
 	public static final Logger logger = LogManager.getLogger(BetterRewardsMod.class.getName());
 
@@ -147,18 +149,16 @@ public class BetterRewardsMod {
 	}
 
 	public static AbstractRelic returnRandomScreenlessBossRelic() {
-		AbstractRelic relic = null;
-		int tries = 0;
-		do {
-			tries++;
-			relic = RelicLibrary.getRelic(AbstractDungeon.returnRandomRelicKey(AbstractRelic.RelicTier.BOSS))
-					.makeCopy();
-		} while ((relic instanceof CallingBell || relic instanceof TinyHouse || relic instanceof Orrery)
-				&& tries < 1000);
-		if (tries >= 1000) {
-			relic = new Circlet();
+		ArrayList<String> bossRelics = new ArrayList<>();
+		bossRelics.addAll(AbstractDungeon.bossRelicPool);
+		bossRelics.removeAll(Arrays.asList(SCREEN_BOSS_RELICS));
+		if (bossRelics.isEmpty()) {
+			return new Circlet();
+		} else {
+			String relicToRemove = bossRelics.remove(0);
+			AbstractDungeon.bossRelicPool.remove(relicToRemove);
+			return RelicLibrary.getRelic(relicToRemove);
 		}
-		return relic.makeCopy();
 	}
 
 	@SuppressWarnings("unchecked")

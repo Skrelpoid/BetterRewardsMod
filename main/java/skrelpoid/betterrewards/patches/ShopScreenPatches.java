@@ -11,7 +11,7 @@ public class ShopScreenPatches {
 
 	@SpirePatch(cls = "com.megacrit.cardcrawl.shop.ShopScreen", method = "init")
 	public static class InitShopItems {
-		@SpireInsertPatch(rloc = 56)
+		@SpireInsertPatch(rloc = 51)
 		public static void Insert(Object o1, Object o2, Object o3) {
 			ShopScreen shopScreen = (ShopScreen) o1;
 			BetterRewardsMod.initShopItems(shopScreen);

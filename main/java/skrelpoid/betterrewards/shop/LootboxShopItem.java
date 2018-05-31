@@ -16,8 +16,6 @@ import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.BlackBlood;
 import com.megacrit.cardcrawl.relics.Circlet;
-import com.megacrit.cardcrawl.relics.RedCirclet;
-import com.megacrit.cardcrawl.relics.SpiritPoop;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.vfx.cardManip.PurgeCardEffect;
 import com.megacrit.cardcrawl.vfx.cardManip.ShowCardAndObtainEffect;
@@ -60,10 +58,10 @@ public class LootboxShopItem extends AbstractShopItem {
 	public int loseGold = LOSE_GOLD;
 	public int curse = CURSE;
 
-	Random rng;
-	PowerTip tip;
+	private Random rng;
+	private PowerTip tip;
 
-	Logger logger = LogManager.getLogger(LootboxShopItem.class.getName());
+	private Logger logger = LogManager.getLogger(LootboxShopItem.class.getName());
 
 	public LootboxShopItem(ShopScreen shopScreen, float x, float y) {
 		super(shopScreen, "shop/lootbox.png", "BetterRewards Lootbox",
@@ -275,17 +273,39 @@ public class LootboxShopItem extends AbstractShopItem {
 	}
 
 	private AbstractRelic returnSpecialRelic() {
-		AbstractRelic r = null;
-		int tries = 0;
-		do {
-			tries++;
-			r = RelicLibrary.specialList.get(rng.random(RelicLibrary.specialList.size() - 1)).makeCopy();
-		} while ((AbstractDungeon.player.hasRelic(r.relicId) || r instanceof Circlet || r instanceof SpiritPoop
-				|| r instanceof RedCirclet) && tries < 1000);
-		if (tries >= 1000) {
-			r = new Circlet();
+		ArrayList<AbstractRelic> toRemove = new ArrayList<>();
+		ArrayList<AbstractRelic> specialRelics = new ArrayList<>();
+		specialRelics.addAll(RelicLibrary.specialList);
+
+		// Don't give unwanted relics
+		for (String s : BetterRewardsMod.UNWANTED_SPECIAL_RELICS) {
+			for (AbstractRelic r : specialRelics) {
+				if (r != null && r.relicId.equals(s)) {
+					toRemove.add(r);
+					break;
+				}
+			}
 		}
-		return r;
+
+		// Don't give relics player already has
+		ArrayList<AbstractRelic> playerRelics = new ArrayList<>();
+		playerRelics.addAll(AbstractDungeon.player.relics);
+		for (AbstractRelic p : playerRelics) {
+			for (AbstractRelic r : specialRelics) {
+				if (r != null && p != null && r.relicId.equals(p.relicId) && !toRemove.contains(r)) {
+					toRemove.add(r);
+					break;
+				}
+			}
+		}
+
+		specialRelics.removeAll(toRemove);
+
+		if (specialRelics.isEmpty()) {
+			return new Circlet();
+		} else {
+			return specialRelics.get(rng.random(specialRelics.size() - 1)).makeCopy();
+		}
 	}
 
 	private void displayLastRoll(String text) {
