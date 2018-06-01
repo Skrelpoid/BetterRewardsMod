@@ -171,7 +171,7 @@ public class BetterRewardsMod {
 			Field coloredCards = ShopScreen.class.getDeclaredField("coloredCards");
 			coloredCards.setAccessible(true);
 			coloredCards.set(shopScreen, rollColoredCards());
-			Method initCards = ShopScreen.class.getDeclaredMethod("initCards", new Class<?>[] {});
+			Method initCards = ShopScreen.class.getDeclaredMethod("initCards");
 			initCards.setAccessible(true);
 			initCards.invoke(shopScreen, new Object[] {});
 
@@ -211,13 +211,13 @@ public class BetterRewardsMod {
 					}
 				}
 			}
-			Method initRelics = ShopScreen.class.getDeclaredMethod("initRelics", new Class<?>[] {});
+			Method initRelics = ShopScreen.class.getDeclaredMethod("initRelics");
 			initRelics.setAccessible(true);
-			initRelics.invoke(shopScreen, new Object[] {});
+			initRelics.invoke(shopScreen);
 
-			Method potions = ShopScreen.class.getDeclaredMethod("initPotions", new Class<?>[] {});
+			Method potions = ShopScreen.class.getDeclaredMethod("initPotions");
 			potions.setAccessible(true);
-			potions.invoke(shopScreen, new Object[] {});
+			potions.invoke(shopScreen);
 
 			shopScreen.purgeAvailable = true;
 
