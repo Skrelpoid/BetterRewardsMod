@@ -62,6 +62,7 @@ public class BetterRewardsMod {
 
 	public static void startRewards() {
 		alreadyStartedRewards = true;
+		// Probably only one of these is needed
 		AbstractDungeon.dialog.clear();
 		GenericEventDialog.clearAllDialogs();
 		GenericEventDialog.clearRemainingOptions();
@@ -120,9 +121,6 @@ public class BetterRewardsMod {
 			y -= 150;
 			shopItems.add(new RandomRareRelicItem(shopScreen, x, y));
 			y -= 150;
-
-			// shopItems.add(new RandomBossRelicItem(shopScreen, x, y));
-			// y -= 150;
 		}
 	}
 
