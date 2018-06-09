@@ -34,14 +34,13 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
 	public BetterRewardsInfoEvent() {
 		super("BetterRewards", getBody(), "event/betterRewardsEvent.jpg");
-		AbstractDungeon.dialog.clear();
-		GenericEventDialog.clearAllDialogs();
-		GenericEventDialog.clearRemainingOptions();
+		imageEventText.clearAllDialogs();
+		imageEventText.clearRemainingOptions();
 
-		GenericEventDialog.setDialogOption("[Leave] Go to the Map.");
-		GenericEventDialog.setDialogOption("[Turn Around] Return to Neow.");
+		imageEventText.setDialogOption("[Leave] Go to the Map.");
+		imageEventText.setDialogOption("[Turn Around] Return to Neow.");
 		if (BetterRewardsMod.canGetRewards) {
-			GenericEventDialog.setDialogOption("[Take coins] #yPocket #ythe #ystrange #yGold.");
+			imageEventText.setDialogOption("[Take coins] #yPocket #ythe #ystrange #yGold.");
 		}
 	}
 
@@ -87,9 +86,8 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 				break;
 			case GO_TO_NEOW:
 				BetterRewardsMod.setIsGettingRewards(false);
-				AbstractDungeon.dialog.clear();
-				GenericEventDialog.clearAllDialogs();
-				GenericEventDialog.clearRemainingOptions();
+				imageEventText.clearAllDialogs();
+				imageEventText.clearRemainingOptions();
 				GenericEventDialog.hide();
 				NeowEvent event = new NeowEvent(BetterRewardsMod.isNeowDone);
 				AbstractDungeon.currMapNode.room.event = event;
@@ -103,20 +101,22 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		case SCALED_GOLD:
 			switch (buttonPressed) {
 			case ENTER_PORTAL:
-				BetterRewardsMod.startRewards();
+				BetterRewardsMod.startRewards(this);
 				break;
 			case GET_MORE_GOLD:
 				getMoreGold();
 				break;
 			default:
-				BetterRewardsMod.startRewards();
+				BetterRewardsMod.startRewards(this);
+				break;
 			}
 			break;
 		case FINISHED:
-			BetterRewardsMod.startRewards();
+			BetterRewardsMod.startRewards(this);
 			break;
 		default:
 			openMap();
+			break;
 		}
 
 	}
@@ -131,22 +131,21 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		} else {
 			state = SCALED_GOLD;
 			calculateHPandGold();
-			GenericEventDialog.updateBodyText("There's still some #yGold left. ");
-			GenericEventDialog.updateDialogOption(GET_MORE_GOLD,
+			imageEventText.updateBodyText("There's still some #yGold left. ");
+			imageEventText.updateDialogOption(GET_MORE_GOLD,
 					"[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
 		}
 	}
 
 	private void startScaledGold() {
 		state = SCALED_GOLD;
-		GenericEventDialog.updateBodyText("As you try to pick up the pot of #yGold, it breaks. "
+		imageEventText.updateBodyText("As you try to pick up the pot of #yGold, it breaks. "
 				+ "All the strange coins fell on the ground. You pick up " + gold + " coins. "
 				+ "Unfortunately, some of the coins rolled away and into some spikes. ");
 		calculateHPandGold();
-		GenericEventDialog.clearAllDialogs();
-		GenericEventDialog.setDialogOption("[Enter Portal] Leave with the #yGold you have.");
-		GenericEventDialog
-				.setDialogOption("[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
+		imageEventText.clearAllDialogs();
+		imageEventText.setDialogOption("[Enter Portal] Leave with the #yGold you have.");
+		imageEventText.setDialogOption("[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
 	}
 
 	private void calculateHPandGold() {
@@ -165,9 +164,9 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
 	private void finish() {
 		state = FINISHED;
-		GenericEventDialog.updateBodyText("It seems like there's no #yGold left.");
-		GenericEventDialog.clearAllDialogs();
-		GenericEventDialog.setDialogOption("[Enter Portal] Go through it and see where you end up.");
+		imageEventText.updateBodyText("It seems like there's no #yGold left.");
+		imageEventText.clearAllDialogs();
+		imageEventText.setDialogOption("[Enter Portal] Go through it and see where you end up.");
 	}
 
 }

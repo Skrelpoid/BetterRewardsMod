@@ -14,7 +14,6 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
-import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.Circlet;
@@ -60,12 +59,11 @@ public class BetterRewardsMod {
 		alreadyStartedRewards = false;
 	}
 
-	public static void startRewards() {
+	public static void startRewards(AbstractEvent e) {
 		alreadyStartedRewards = true;
 		// Probably only one of these is needed
-		AbstractDungeon.dialog.clear();
-		GenericEventDialog.clearAllDialogs();
-		GenericEventDialog.clearRemainingOptions();
+		e.imageEventText.clearAllDialogs();
+		e.imageEventText.clearRemainingOptions();
 		ShopRoom room = new ShopRoom();
 		AbstractDungeon.currMapNode.room = room;
 		room.onPlayerEntry();
@@ -114,7 +112,7 @@ public class BetterRewardsMod {
 		float x = 200;
 		float y = 850;
 		if (isGettingRewards && !alreadyGotRewards) {
-			shopItems = new ArrayList<AbstractShopItem>();
+			shopItems = new ArrayList<>();
 			shopItems.add(new RerollShopItem(shopScreen, x, y));
 			y -= 150;
 			shopItems.add(new LootboxShopItem(shopScreen, x, y));
@@ -173,7 +171,7 @@ public class BetterRewardsMod {
 			initCards.setAccessible(true);
 			initCards.invoke(shopScreen, new Object[] {});
 
-			ArrayList<StoreRelic> relics = new ArrayList<StoreRelic>();
+			ArrayList<StoreRelic> relics = new ArrayList<>();
 			Field shopRelics = ShopScreen.class.getDeclaredField("relics");
 			shopRelics.setAccessible(true);
 			relics.addAll((ArrayList<StoreRelic>) shopRelics.get(shopScreen));
@@ -181,7 +179,7 @@ public class BetterRewardsMod {
 			for (StoreRelic sr : relics) {
 				AbstractRelic relic = sr.relic;
 				if (relic != null && !AbstractDungeon.player.hasRelic(relic.relicId)) {
-					ArrayList<String> tmp = new ArrayList<String>();
+					ArrayList<String> tmp = new ArrayList<>();
 					switch (relic.tier) {
 					case COMMON:
 						tmp.add(relic.relicId.toString());
@@ -229,7 +227,7 @@ public class BetterRewardsMod {
 
 	// From Merchant
 	private static ArrayList<AbstractCard> rollColoredCards() {
-		ArrayList<AbstractCard> cards = new ArrayList<AbstractCard>();
+		ArrayList<AbstractCard> cards = new ArrayList<>();
 		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
 				.makeCopy());
 
@@ -258,7 +256,7 @@ public class BetterRewardsMod {
 
 	// From Merchant
 	private static ArrayList<AbstractCard> rollColorlessCards() {
-		ArrayList<AbstractCard> cards = new ArrayList<AbstractCard>();
+		ArrayList<AbstractCard> cards = new ArrayList<>();
 		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.UNCOMMON).makeCopy());
 		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.RARE).makeCopy());
 		return cards;
