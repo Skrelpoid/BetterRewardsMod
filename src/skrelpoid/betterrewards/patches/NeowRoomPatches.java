@@ -7,7 +7,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import skrelpoid.betterrewards.BetterRewardsMod;
 
 public class NeowRoomPatches {
-	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowRoom", method = "ctor")
+	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowRoom", method = "<ctor>")
 	public static class RunHistoryRefresh {
 		// before Neow is initialized, check if can get rewards
 		// should happen before every run, before Neow is shown

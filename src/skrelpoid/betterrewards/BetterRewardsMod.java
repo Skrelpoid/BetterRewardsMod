@@ -1,5 +1,6 @@
 package skrelpoid.betterrewards;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -9,11 +10,15 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
+import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.Circlet;
@@ -23,6 +28,11 @@ import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.InfiniteSpeechBubble;
 
+import basemod.BaseMod;
+import basemod.ModLabeledToggleButton;
+import basemod.ModPanel;
+import basemod.ModToggleButton;
+import basemod.interfaces.PostInitializeSubscriber;
 import skrelpoid.betterrewards.events.BetterRewardsInfoEvent;
 import skrelpoid.betterrewards.shop.AbstractShopItem;
 import skrelpoid.betterrewards.shop.LootboxShopItem;
@@ -30,7 +40,7 @@ import skrelpoid.betterrewards.shop.RandomRareRelicItem;
 import skrelpoid.betterrewards.shop.RerollShopItem;
 
 @SpireInitializer
-public class BetterRewardsMod {
+public class BetterRewardsMod implements PostInitializeSubscriber {
 
 	public static final String[] UNWANTED_SPECIAL_RELICS = { "Circlet", "Red Circlet", "Spirit Poop" };
 	public static final String[] SCREEN_BOSS_RELICS = { "Calling Bell", "Orrery", "Tiny House" };
@@ -39,6 +49,7 @@ public class BetterRewardsMod {
 	public static boolean alreadyStartedRewards = false;
 	public static boolean isGettingRewards = false;
 	public static boolean alreadyGotRewards = false;
+	public static boolean isFunMode = false;
 	public static RunData lastRun;
 
 	public static RunHistory runHistory;
@@ -47,10 +58,17 @@ public class BetterRewardsMod {
 	public static int playerGold;
 	public static int button;
 
+	public static final String MOD_NAME = "BetterRewards";
+	public static final String DESCRIPTION = MOD_NAME;
+	public static final String AUTHOR = "Skrelpoid";
+
+	private static SpireConfig config;
+
 	public static final Logger logger = LogManager.getLogger(BetterRewardsMod.class.getName());
 
 	public static void initialize() {
 		runHistory = new RunHistory();
+		BaseMod.subscribe(new BetterRewardsMod());
 	}
 
 	public static void setIsGettingRewards(boolean b) {
@@ -270,14 +288,45 @@ public class BetterRewardsMod {
 		}
 	}
 
-	// According to BaseMod documentation, this should work(it doesn't)
-	public static void fixBaseModIssue(String[] str) {
-		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards && str[0].startsWith("betterrewardsmod:")) {
-			str[0] = "sts" + str[0].substring(str[0].indexOf(":"));
+	public static final float X = 400;
+	public static final float Y = 700;
+
+	@Override
+	public void receivePostInitialize() {
+		loadSettings();
+		ModPanel panel = new ModPanel();
+		ModLabeledToggleButton fun = new ModLabeledToggleButton("Enable FUN mode (No HP cost)", X, Y, Color.WHITE,
+				FontHelper.buttonLabelFont, isFunMode, panel, (l) -> {}, BetterRewardsMod::funToggle);
+		panel.addUIElement(fun);
+		BaseMod.registerModBadge(new Texture("modBadge.png"), MOD_NAME, AUTHOR, DESCRIPTION, panel);
+
+	}
+
+	private static void funToggle(ModToggleButton t) {
+		isFunMode = t.enabled;
+		saveSettings();
+	}
+
+	private static void saveSettings() {
+		config.setBool("isFunMode", isFunMode);
+		try {
+			config.save();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 
-	// FIX rewardsscreen in shop sometimes forces player to leave for now
+	private static void loadSettings() {
+		try {
+			config = new SpireConfig(MOD_NAME, MOD_NAME + "Config");
+			config.load();
+		} catch (Exception ex) {
+			logger.catching(ex);
+		}
+		isFunMode = config.getBool("isFunMode");
+	}
+
+	// TODO FIX rewardsscreen in shop sometimes forces player to leave for now
 	// fixed by not giving relics that show reward screen
 	// could be really fixed by patching proceed button
 }
