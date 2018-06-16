@@ -75,7 +75,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 			case TAKE_GOLD:
 				BetterRewardsMod.playerGold = AbstractDungeon.player.gold;
 				maxGold = BetterRewardsMod.lastRun.score;
-				gold = GoldHelper.getGold(maxGold);
+				gold = BetterRewardsMod.isFunMode ? maxGold : GoldHelper.getGold(maxGold);
 				AbstractDungeon.player.gold = gold;
 				goldPercent = gold / (double) maxGold;
 				if (AbstractDungeon.player.gold < maxGold) {

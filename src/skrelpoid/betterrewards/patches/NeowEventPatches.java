@@ -23,7 +23,7 @@ public class NeowEventPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "ctor", paramtypes = "boolean")
+	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "<ctor>", paramtypes = "boolean")
 	public static class AddBetterRewardsButton {
 		@SpireInsertPatch(rloc = 45)
 		public static void Insert(AbstractEvent e, boolean b) {
@@ -32,6 +32,13 @@ public class NeowEventPatches {
 				BetterRewardsMod.button = RoomEventDialog.optionList.size();
 				e.roomEventText.addDialogOption("[Turn Around]");
 			}
+		}
+	}
+
+	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "<ctor>", paramtypes = "boolean")
+	public static class FixEventImage {
+		public static void Postfix(NeowEvent e, boolean b) {
+			e.imageEventText.clear();
 		}
 	}
 

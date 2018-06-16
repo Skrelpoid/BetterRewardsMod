@@ -11,9 +11,9 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
-import com.megacrit.cardcrawl.helpers.InputHelper;
 import com.megacrit.cardcrawl.helpers.PowerTip;
 import com.megacrit.cardcrawl.helpers.TipHelper;
+import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 
 // Mostly copied from StoreRelic
@@ -41,16 +41,16 @@ public abstract class AbstractShopItem {
 			float y) {
 		this.shopScreen = shopScreen;
 		texture = new Texture(texPath);
-		tips = new ArrayList<PowerTip>();
+		tips = new ArrayList<>();
 		tips.add(new PowerTip(name, description));
-		this.price = cost;
+		price = cost;
 		discount = 1;
 		applyDiscount(1);
 		isVisible = true;
 		hb = new Hitbox(120.0f * Settings.scale, 120.0f * Settings.scale);
 		this.x = x * Settings.scale;
 		this.y = y * Settings.scale;
-		this.scale = Settings.scale;
+		scale = Settings.scale;
 	}
 
 	public void applyDiscount(float f) {
@@ -65,8 +65,8 @@ public abstract class AbstractShopItem {
 	public void render(SpriteBatch sb) {
 		if (isVisible) {
 			sb.setColor(Color.WHITE);
-			sb.draw(texture, hb.cX - 64.0F, hb.cY - 64.0F, 64.0F, 64.0F, 128.0F, 128.0F, this.scale, this.scale, 0, 0,
-					0, 128, 128, false, false);
+			sb.draw(texture, hb.cX - 64.0F, hb.cY - 64.0F, 64.0F, 64.0F, 128.0F, 128.0F, scale, scale, 0, 0, 0, 128,
+					128, false, false);
 			if (hb.hovered) {
 				renderTip(sb);
 			}
@@ -86,10 +86,10 @@ public abstract class AbstractShopItem {
 	private void renderTip(SpriteBatch sb) {
 		if (InputHelper.mX < 1400.0F * Settings.scale) {
 			TipHelper.queuePowerTips(InputHelper.mX + 60.0F * Settings.scale, InputHelper.mY - 30.0F * Settings.scale,
-					this.tips);
+					tips);
 		} else {
 			TipHelper.queuePowerTips(InputHelper.mX - 350.0F * Settings.scale, InputHelper.mY - 50.0F * Settings.scale,
-					this.tips);
+					tips);
 		}
 	}
 
@@ -99,7 +99,7 @@ public abstract class AbstractShopItem {
 			hb.update();
 
 			if (hb.hovered) {
-				this.shopScreen.moveHand(hb.cX - 190.0F * Settings.scale, hb.cY - 70.0F * Settings.scale);
+				shopScreen.moveHand(hb.cX - 190.0F * Settings.scale, hb.cY - 70.0F * Settings.scale);
 				if (InputHelper.justClickedLeft) {
 					hb.clickStarted = true;
 				}
@@ -119,15 +119,15 @@ public abstract class AbstractShopItem {
 		if (canBuy()) {
 			AbstractDungeon.player.loseGold(realPrice);
 			CardCrawlGame.sound.play("SHOP_PURCHASE", 0.1F);
-			this.shopScreen.playBuySfx();
-			this.shopScreen.createSpeech(ShopScreen.getBuyMsg());
+			shopScreen.playBuySfx();
+			shopScreen.createSpeech(ShopScreen.getBuyMsg());
 			if (!AbstractDungeon.player.hasRelic("The Courier")) {
-				this.isVisible = false;
+				isVisible = false;
 			}
 			onPurchase();
 		} else {
-			this.shopScreen.playCantBuySfx();
-			this.shopScreen.createSpeech(ShopScreen.getCantBuyMsg());
+			shopScreen.playCantBuySfx();
+			shopScreen.createSpeech(ShopScreen.getCantBuyMsg());
 		}
 	}
 
