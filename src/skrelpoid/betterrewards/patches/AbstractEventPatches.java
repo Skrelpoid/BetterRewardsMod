@@ -1,14 +1,11 @@
 package skrelpoid.betterrewards.patches;
 
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.rooms.AbstractRoom;
 
 import javassist.CannotCompileException;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 import javassist.expr.MethodCall;
-import skrelpoid.betterrewards.BetterRewardsMod;
 
 // @formatter:off
 public class AbstractEventPatches {
@@ -39,21 +36,4 @@ public class AbstractEventPatches {
 			};
 		}
 	}
-
-
-	// Not needed anymore, probably will be removed
-	// @SpirePatch(cls = "com.megacrit.cardcrawl.events.AbstractEvent", method =
-	// "openMap")
-	public static class StartRewards {
-		public static void Replace(Object o) {
-			if (BetterRewardsMod.shouldShowInfo()) {
-				BetterRewardsMod.showInfo();
-			} else {
-				AbstractDungeon.getCurrRoom().phase = AbstractRoom.RoomPhase.COMPLETE;
-				AbstractDungeon.dungeonMapScreen.open(false);
-			}
-		}
-	}
-
-
 }
