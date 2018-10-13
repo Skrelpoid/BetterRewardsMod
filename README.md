@@ -24,8 +24,8 @@ BaseMod and the Game's jar (desktop-1.0.jar)
 Your directory structure should look like this:
 ```
 git (or wherever you store your git projects)
-   \_The-Sage
-             \_src...
+   \_YourProject
+                \_src...
    \_lib
         \_ModTheSpire.jar
           BaseMod.jar
