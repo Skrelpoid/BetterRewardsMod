@@ -9,7 +9,7 @@ import skrelpoid.betterrewards.BetterRewardsMod;
 
 public class ShopScreenPatches {
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.shop.ShopScreen", method = "init")
+	@SpirePatch(clz = com.megacrit.cardcrawl.shop.ShopScreen.class, method = "init")
 	public static class InitShopItems {
 		@SpireInsertPatch(rloc = 52)
 		public static void Insert(Object o1, Object o2, Object o3) {
@@ -18,7 +18,7 @@ public class ShopScreenPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.shop.ShopScreen", method = "update")
+	@SpirePatch(clz = com.megacrit.cardcrawl.shop.ShopScreen.class, method = "update")
 	public static class UpdateShopItems {
 		@SpireInsertPatch(rloc = 12)
 		public static void Insert(Object o1) {
@@ -27,7 +27,7 @@ public class ShopScreenPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.shop.ShopScreen", method = "render")
+	@SpirePatch(clz = com.megacrit.cardcrawl.shop.ShopScreen.class, method = "render")
 	public static class RenderShopItems {
 		@SpireInsertPatch(rloc = 5)
 		public static void Insert(Object o1, Object o2) {
@@ -36,7 +36,7 @@ public class ShopScreenPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.shop.ShopScreen", method = "applyDiscount")
+	@SpirePatch(clz = com.megacrit.cardcrawl.shop.ShopScreen.class, method = "applyDiscount")
 	public static class DiscountShopItems {
 		public static void Prefix(Object o, float f) {
 			BetterRewardsMod.discountShopItems(f);
