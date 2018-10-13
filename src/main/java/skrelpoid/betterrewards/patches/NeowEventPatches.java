@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.RoomEventDialog;
@@ -14,7 +15,7 @@ import skrelpoid.betterrewards.BetterRewardsMod;
 public class NeowEventPatches {
 
 	// Only for Testing
-	// @SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method =
+	// @SpirePatch(clz = com.megacrit.cardcrawl.neow.NeowEvent.class, method =
 	// "ctor", paramtypes = "boolean")
 	public static class ForceBlessing {
 		@SpireInsertPatch(rloc = 1)
@@ -23,7 +24,7 @@ public class NeowEventPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "<ctor>", paramtypes = "boolean")
+	@SpirePatch(clz = com.megacrit.cardcrawl.neow.NeowEvent.class, method = SpirePatch.CONSTRUCTOR, paramtypez = boolean.class)
 	public static class AddBetterRewardsButton {
 		@SpireInsertPatch(rloc = 45)
 		public static void Insert(AbstractEvent e, boolean b) {
@@ -35,15 +36,16 @@ public class NeowEventPatches {
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "<ctor>", paramtypes = "boolean")
+	@SpirePatch(clz = com.megacrit.cardcrawl.neow.NeowEvent.class, method = SpirePatch.CONSTRUCTOR, paramtypez = boolean.class)
 	public static class FixEventImage {
 		public static void Postfix(NeowEvent e, boolean b) {
 			e.imageEventText.clear();
 		}
 	}
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.neow.NeowEvent", method = "buttonEffect")
+	@SpirePatch(clz = com.megacrit.cardcrawl.neow.NeowEvent.class, method = "buttonEffect")
 	public static class MaybeStartRewards {
+		@SpirePrefixPatch
 		public static void Prefix(AbstractEvent e, int buttonPressed) {
 			try {
 				Field screenNumField = NeowEvent.class.getDeclaredField("screenNum");

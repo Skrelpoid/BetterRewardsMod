@@ -9,7 +9,7 @@ import com.megacrit.cardcrawl.relics.AbstractRelic;
 public class DebugPatches {
 	public static final Logger logger = LogManager.getLogger(DebugPatches.class.getName());
 
-	// @SpirePatch(cls = "com.megacrit.cardcrawl.helpers.RelicLibrary", method =
+	// @SpirePatch(clz = com.megacrit.cardcrawl.helpers.RelicLibrary.class, method =
 	// "getRelic")
 	public static class DebugGetRelic {
 		@SpireInsertPatch(rloc = 2)
@@ -20,7 +20,7 @@ public class DebugPatches {
 		}
 	}
 
-	// @SpirePatch(cls = "com.megacrit.cardcrawl.shop.ShopScreen", method =
+	// @SpirePatch(clz = com.megacrit.cardcrawl.shop.ShopScreen.class, method =
 	// "initRelics")
 	public static class DebugReturnRandomRelicEnd {
 		@SpireInsertPatch(rlocs = { 6, 8 }, localvars = { "tempRelic" })

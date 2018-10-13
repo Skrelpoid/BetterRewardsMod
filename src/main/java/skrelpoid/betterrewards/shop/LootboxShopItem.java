@@ -161,7 +161,7 @@ public class LootboxShopItem extends AbstractShopItem {
 		}
 		reward += colorlessCard;
 		if (roll < reward) {
-			AbstractCard card = AbstractDungeon.returnTrulyRandomColorlessCard();
+			AbstractCard card = AbstractDungeon.returnColorlessCard();
 			AbstractDungeon.effectList
 					.add(new ShowCardAndObtainEffect(card.makeCopy(), Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
 			logger.info("colorlessCard");
