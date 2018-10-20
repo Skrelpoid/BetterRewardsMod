@@ -164,7 +164,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
 	private void finish() {
 		state = FINISHED;
-		imageEventText.updateBodyText("It seems like there's no #yGold left.");
+		imageEventText.updateBodyText("You pocketed all the #yGold. There's nothing of it left.");
 		imageEventText.clearAllDialogs();
 		imageEventText.setDialogOption("[Enter Portal] Go through it and see where you end up.");
 	}
