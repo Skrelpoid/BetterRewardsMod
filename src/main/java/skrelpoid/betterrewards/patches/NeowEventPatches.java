@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.events.AbstractEvent;
@@ -26,8 +27,8 @@ public class NeowEventPatches {
 
 	@SpirePatch(clz = com.megacrit.cardcrawl.neow.NeowEvent.class, method = SpirePatch.CONSTRUCTOR, paramtypez = boolean.class)
 	public static class AddBetterRewardsButton {
-		@SpireInsertPatch(rloc = 45)
-		public static void Insert(AbstractEvent e, boolean b) {
+		@SpirePostfixPatch
+		public static void Postfix(AbstractEvent e, boolean b) {
 			BetterRewardsMod.isNeowDone = b;
 			if (!Settings.isDailyRun && !b) {
 				BetterRewardsMod.button = RoomEventDialog.optionList.size();
@@ -38,6 +39,7 @@ public class NeowEventPatches {
 
 	@SpirePatch(clz = com.megacrit.cardcrawl.neow.NeowEvent.class, method = SpirePatch.CONSTRUCTOR, paramtypez = boolean.class)
 	public static class FixEventImage {
+		@SpirePostfixPatch
 		public static void Postfix(NeowEvent e, boolean b) {
 			e.imageEventText.clear();
 		}

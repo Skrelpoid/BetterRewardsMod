@@ -10,7 +10,7 @@ import javassist.expr.MethodCall;
 // @formatter:off
 public class AbstractEventPatches {
 
-	@SpirePatch(cls = "com.megacrit.cardcrawl.events.AbstractEvent", method = "openMap")
+	@SpirePatch(clz = com.megacrit.cardcrawl.events.AbstractEvent.class, method = "openMap")
 	public static class Start {
 		public static ExprEditor Instrument() {
 			return new ExprEditor() {
