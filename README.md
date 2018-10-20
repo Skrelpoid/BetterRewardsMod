@@ -11,8 +11,7 @@ Like all mods, my Mod needs Mod the Spire: https://github.com/kiooeht/ModTheSpir
 Download: 
 https://github.com/Skrelpoid/BetterRewardsMod/releases
 
-## Building (only important for Modders
-)
+## Building (only important for Modders)
 This Mod uses Gradle for building. After making changes, you can double click buildMod.cmd 
 (or run ./gradlew build or gradlew build in a console) to 
 compile it and build the jar. The Mod will be in the /build/libs folder. Copy it over to 
@@ -25,8 +24,8 @@ BaseMod and the Game's jar (desktop-1.0.jar)
 Your directory structure should look like this:
 ```
 git (or wherever you store your git projects)
-   \_The-Sage
-             \_src...
+   \_YourProject
+                \_src...
    \_lib
         \_ModTheSpire.jar
           BaseMod.jar

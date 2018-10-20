@@ -3,6 +3,7 @@ package skrelpoid.betterrewards.patches;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 
 import skrelpoid.betterrewards.BetterRewardsMod;
@@ -38,6 +39,7 @@ public class ShopScreenPatches {
 
 	@SpirePatch(clz = com.megacrit.cardcrawl.shop.ShopScreen.class, method = "applyDiscount")
 	public static class DiscountShopItems {
+		@SpirePrefixPatch
 		public static void Prefix(Object o, float f) {
 			BetterRewardsMod.discountShopItems(f);
 		}
