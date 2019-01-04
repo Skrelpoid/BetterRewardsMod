@@ -6,7 +6,6 @@ import com.megacrit.cardcrawl.events.AbstractImageEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.events.RoomEventDialog;
 import com.megacrit.cardcrawl.neow.NeowEvent;
-
 import skrelpoid.betterrewards.BetterRewardsMod;
 import skrelpoid.betterrewards.GoldHelper;
 
@@ -54,7 +53,8 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 					+ " coins in the pot.";
 		} else {
 			body += " NL As you approach the pot, it suddenly disappears! You can only spot a small note on the ground: "
-					+ "~S~ ~C~ ~O~ ~R~ ~E~";
+					+ "~S~ ~C~ ~O~ ~R~ ~E~ NL "
+					+ "(Your last run didn't have enough score!)";
 		}
 		return body;
 	}
@@ -67,56 +67,56 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 	@Override
 	protected void buttonEffect(int buttonPressed) {
 		switch (state) {
-		case INFO:
-			switch (buttonPressed) {
-			case GO_TO_MAP:
-				openMap();
-				break;
-			case TAKE_GOLD:
-				BetterRewardsMod.playerGold = AbstractDungeon.player.gold;
-				maxGold = BetterRewardsMod.lastRun.score;
-				gold = BetterRewardsMod.isFunMode ? maxGold : GoldHelper.getGold(maxGold);
-				AbstractDungeon.player.gold = gold;
-				goldPercent = gold / (double) maxGold;
-				if (AbstractDungeon.player.gold < maxGold) {
-					startScaledGold();
-				} else {
-					finish();
+			case INFO:
+				switch (buttonPressed) {
+					case GO_TO_MAP:
+						openMap();
+						break;
+					case TAKE_GOLD:
+						BetterRewardsMod.playerGold = AbstractDungeon.player.gold;
+						maxGold = BetterRewardsMod.lastRun.score;
+						gold = BetterRewardsMod.isFunMode ? maxGold : GoldHelper.getGold(maxGold);
+						AbstractDungeon.player.gold = gold;
+						goldPercent = gold / (double) maxGold;
+						if (AbstractDungeon.player.gold < maxGold) {
+							startScaledGold();
+						} else {
+							finish();
+						}
+						break;
+					case GO_TO_NEOW:
+						BetterRewardsMod.setIsGettingRewards(false);
+						imageEventText.clearAllDialogs();
+						imageEventText.clearRemainingOptions();
+						GenericEventDialog.hide();
+						NeowEvent event = new NeowEvent(BetterRewardsMod.isNeowDone);
+						AbstractDungeon.currMapNode.room.event = event;
+						event.onEnterRoom();
+						break;
+					default:
+						openMap();
+						break;
 				}
 				break;
-			case GO_TO_NEOW:
-				BetterRewardsMod.setIsGettingRewards(false);
-				imageEventText.clearAllDialogs();
-				imageEventText.clearRemainingOptions();
-				GenericEventDialog.hide();
-				NeowEvent event = new NeowEvent(BetterRewardsMod.isNeowDone);
-				AbstractDungeon.currMapNode.room.event = event;
-				event.onEnterRoom();
+			case SCALED_GOLD:
+				switch (buttonPressed) {
+					case ENTER_PORTAL:
+						BetterRewardsMod.startRewards(this);
+						break;
+					case GET_MORE_GOLD:
+						getMoreGold();
+						break;
+					default:
+						BetterRewardsMod.startRewards(this);
+						break;
+				}
+				break;
+			case FINISHED:
+				BetterRewardsMod.startRewards(this);
 				break;
 			default:
 				openMap();
 				break;
-			}
-			break;
-		case SCALED_GOLD:
-			switch (buttonPressed) {
-			case ENTER_PORTAL:
-				BetterRewardsMod.startRewards(this);
-				break;
-			case GET_MORE_GOLD:
-				getMoreGold();
-				break;
-			default:
-				BetterRewardsMod.startRewards(this);
-				break;
-			}
-			break;
-		case FINISHED:
-			BetterRewardsMod.startRewards(this);
-			break;
-		default:
-			openMap();
-			break;
 		}
 
 	}
