@@ -54,7 +54,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		} else {
 			body += " NL As you approach the pot, it suddenly disappears! You can only spot a small note on the ground: "
 					+ "~S~ ~C~ ~O~ ~R~ ~E~ NL "
-					+ "(Your last run didn't have enough score!)";
+					+ "(Your last run with this character didn't have enough score!)";
 		}
 		return body;
 	}
@@ -119,6 +119,15 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 				break;
 		}
 
+	}
+
+	@Override
+	protected void openMap() {
+		imageEventText.updateBodyText("");
+		imageEventText.clearAllDialogs();
+		imageEventText.clearRemainingOptions();
+		GenericEventDialog.hide();
+		super.openMap();
 	}
 
 	private void getMoreGold() {
