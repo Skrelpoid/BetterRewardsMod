@@ -6,10 +6,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,6 +16,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
+import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
@@ -27,7 +26,6 @@ import com.megacrit.cardcrawl.screens.stats.RunData;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.InfiniteSpeechBubble;
-
 import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
@@ -80,8 +78,10 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static void startRewards(AbstractEvent e) {
 		alreadyStartedRewards = true;
 		// Probably only one of these is needed
+		e.imageEventText.updateBodyText("");
 		e.imageEventText.clearAllDialogs();
 		e.imageEventText.clearRemainingOptions();
+		GenericEventDialog.hide();
 		ShopRoom room = new ShopRoom();
 		AbstractDungeon.currMapNode.room = room;
 		room.onPlayerEntry();
@@ -199,29 +199,29 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 				if (relic != null && !AbstractDungeon.player.hasRelic(relic.relicId)) {
 					ArrayList<String> tmp = new ArrayList<>();
 					switch (relic.tier) {
-					case COMMON:
-						tmp.add(relic.relicId.toString());
-						tmp.addAll(AbstractDungeon.commonRelicPool);
-						AbstractDungeon.commonRelicPool = tmp;
-						break;
-					case UNCOMMON:
-						tmp.add(relic.relicId.toString());
-						tmp.addAll(AbstractDungeon.uncommonRelicPool);
-						AbstractDungeon.uncommonRelicPool = tmp;
-						break;
-					case RARE:
-						tmp.add(relic.relicId.toString());
-						tmp.addAll(AbstractDungeon.rareRelicPool);
-						AbstractDungeon.rareRelicPool = tmp;
-						break;
-					case SHOP:
-						tmp.add(relic.relicId.toString());
-						tmp.addAll(AbstractDungeon.shopRelicPool);
-						AbstractDungeon.shopRelicPool = tmp;
-						break;
-					default:
-						logger.info("Unexpected Relic Tier: " + relic.tier);
-						break;
+						case COMMON:
+							tmp.add(relic.relicId.toString());
+							tmp.addAll(AbstractDungeon.commonRelicPool);
+							AbstractDungeon.commonRelicPool = tmp;
+							break;
+						case UNCOMMON:
+							tmp.add(relic.relicId.toString());
+							tmp.addAll(AbstractDungeon.uncommonRelicPool);
+							AbstractDungeon.uncommonRelicPool = tmp;
+							break;
+						case RARE:
+							tmp.add(relic.relicId.toString());
+							tmp.addAll(AbstractDungeon.rareRelicPool);
+							AbstractDungeon.rareRelicPool = tmp;
+							break;
+						case SHOP:
+							tmp.add(relic.relicId.toString());
+							tmp.addAll(AbstractDungeon.shopRelicPool);
+							AbstractDungeon.shopRelicPool = tmp;
+							break;
+						default:
+							logger.info("Unexpected Relic Tier: " + relic.tier);
+							break;
 					}
 				}
 			}
