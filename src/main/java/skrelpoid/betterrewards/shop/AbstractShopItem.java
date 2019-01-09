@@ -1,7 +1,6 @@
 package skrelpoid.betterrewards.shop;
 
 import java.util.ArrayList;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -135,5 +134,6 @@ public abstract class AbstractShopItem {
 		return AbstractDungeon.player.gold >= realPrice;
 	}
 
+	// called if clicked and player can buy
 	protected abstract void onPurchase();
 }
