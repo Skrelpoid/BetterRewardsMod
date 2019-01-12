@@ -42,7 +42,9 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 
 	public static final String[] UNWANTED_SPECIAL_RELICS = { "Circlet", "Red Circlet", "Spirit Poop" };
 	public static final String[] SCREEN_BOSS_RELICS = { "Calling Bell", "Orrery", "Tiny House" };
-
+	
+	
+	public static boolean shouldShowButton = false;
 	public static boolean canGetRewards = false;
 	public static boolean alreadyStartedRewards = false;
 	public static boolean isGettingRewards = false;
