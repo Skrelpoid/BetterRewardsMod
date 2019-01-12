@@ -50,6 +50,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static boolean isGettingRewards = false;
 	public static boolean alreadyGotRewards = false;
 	public static boolean isFunMode = false;
+	public static boolean eventNotFinished = false;
 	public static RunData lastRun;
 
 	public static RunHistory runHistory;
@@ -79,6 +80,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 
 	public static void startRewards(AbstractEvent e) {
 		alreadyStartedRewards = true;
+		BetterRewardsMod.eventNotFinished = true;
 		// Probably only one of these is needed
 		e.imageEventText.updateBodyText("");
 		e.imageEventText.clearAllDialogs();
