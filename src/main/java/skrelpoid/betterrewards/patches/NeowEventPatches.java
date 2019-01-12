@@ -30,7 +30,8 @@ public class NeowEventPatches {
 		@SpirePostfixPatch
 		public static void Postfix(AbstractEvent e, boolean b) {
 			BetterRewardsMod.isNeowDone = b;
-			if (!Settings.isDailyRun && !b) {
+			if (!Settings.isDailyRun && !b && BetterRewardsMod.shouldShowButton) {
+				BetterRewardsMod.shouldShowButton = false;
 				BetterRewardsMod.button = RoomEventDialog.optionList.size();
 				e.roomEventText.addDialogOption("[Turn Around]");
 			}

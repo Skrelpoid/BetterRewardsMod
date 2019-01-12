@@ -1,5 +1,6 @@
 package skrelpoid.betterrewards.events;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractImageEvent;
@@ -33,6 +34,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
 	public BetterRewardsInfoEvent() {
 		super("BetterRewards", getBody(), "event/betterRewardsEvent.jpg");
+		BetterRewardsMod.eventNotFinished = true;
 		imageEventText.clearAllDialogs();
 		imageEventText.clearRemainingOptions();
 
@@ -123,6 +125,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
 	@Override
 	protected void openMap() {
+		BetterRewardsMod.eventNotFinished = true;
 		imageEventText.updateBodyText("");
 		imageEventText.clearAllDialogs();
 		imageEventText.clearRemainingOptions();
@@ -154,7 +157,8 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		calculateHPandGold();
 		imageEventText.clearAllDialogs();
 		imageEventText.setDialogOption("[Enter Portal] Leave with the #yGold you have.");
-		imageEventText.setDialogOption("[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
+		imageEventText.setDialogOption(
+				"[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
 	}
 
 	private void calculateHPandGold() {
@@ -176,6 +180,30 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		imageEventText.updateBodyText("You pocketed all the #yGold. There's nothing of it left.");
 		imageEventText.clearAllDialogs();
 		imageEventText.setDialogOption("[Enter Portal] Go through it and see where you end up.");
+	}
+
+	@Override
+	public void render(SpriteBatch sb) {
+		if (BetterRewardsMod.eventNotFinished)
+			super.render(sb);
+	}
+
+	@Override
+	public void renderAboveTopPanel(SpriteBatch sb) {
+		if (BetterRewardsMod.eventNotFinished)
+			super.renderAboveTopPanel(sb);
+	}
+
+	@Override
+	public void renderText(SpriteBatch sb) {
+		if (BetterRewardsMod.eventNotFinished)
+			super.renderText(sb);
+	}
+
+	@Override
+	public void renderRoomEventPanel(SpriteBatch sb) {
+		if (BetterRewardsMod.eventNotFinished)
+			super.renderRoomEventPanel(sb);
 	}
 
 }
