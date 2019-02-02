@@ -94,6 +94,10 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static boolean shouldShowInfo() {
 		return isGettingRewards && !alreadyStartedRewards && !alreadyGotRewards;
 	}
+	
+	public static boolean isCurrentlyInShop() {
+		return isGettingRewards && alreadyStartedRewards && !alreadyGotRewards;
+	}
 
 	public static void showInfo() {
 		// copied from NeowEvent.dismissBubble()

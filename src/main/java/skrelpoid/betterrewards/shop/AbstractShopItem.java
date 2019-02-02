@@ -12,6 +12,7 @@ import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.helpers.PowerTip;
 import com.megacrit.cardcrawl.helpers.TipHelper;
+import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 
@@ -60,6 +61,10 @@ public abstract class AbstractShopItem {
 	public void setVisible(boolean b) {
 		isVisible = b;
 	}
+	
+	public boolean isVisible() {
+		return isVisible;
+	}
 
 	public void render(SpriteBatch sb) {
 		if (isVisible) {
@@ -103,13 +108,13 @@ public abstract class AbstractShopItem {
 					hb.clickStarted = true;
 				}
 				scale = Settings.scale * 1.25f;
+				if (hb.clicked || CInputActionSet.select.isJustPressed()) {
+					hb.clicked = false;
+					tryPurchase();
+					CInputActionSet.select.unpress();
+				}
 			} else {
 				scale = Settings.scale;
-			}
-
-			if (hb.clicked) {
-				hb.clicked = false;
-				tryPurchase();
 			}
 		}
 	}
@@ -132,6 +137,10 @@ public abstract class AbstractShopItem {
 
 	public boolean canBuy() {
 		return AbstractDungeon.player.gold >= realPrice;
+	}
+	
+	public Hitbox getHb() {
+		return hb;
 	}
 
 	// called if clicked and player can buy
