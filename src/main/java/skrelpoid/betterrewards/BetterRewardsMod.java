@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,6 +94,10 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 
 	public static boolean shouldShowInfo() {
 		return isGettingRewards && !alreadyStartedRewards && !alreadyGotRewards;
+	}
+	
+	public static boolean isCurrentlyInShop() {
+		return isGettingRewards && alreadyStartedRewards && !alreadyGotRewards;
 	}
 
 	public static void showInfo() {
@@ -197,7 +202,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 			Field shopRelics = ShopScreen.class.getDeclaredField("relics");
 			shopRelics.setAccessible(true);
 			relics.addAll((ArrayList<StoreRelic>) shopRelics.get(shopScreen));
-			// Add rerolled Items back to relicPool
+			// Add rerolled Items back to relicPool and shuffle them
 			for (StoreRelic sr : relics) {
 				AbstractRelic relic = sr.relic;
 				if (relic != null && !AbstractDungeon.player.hasRelic(relic.relicId)) {
@@ -207,21 +212,25 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 							tmp.add(relic.relicId.toString());
 							tmp.addAll(AbstractDungeon.commonRelicPool);
 							AbstractDungeon.commonRelicPool = tmp;
+							Collections.shuffle(AbstractDungeon.commonRelicPool);
 							break;
 						case UNCOMMON:
 							tmp.add(relic.relicId.toString());
 							tmp.addAll(AbstractDungeon.uncommonRelicPool);
 							AbstractDungeon.uncommonRelicPool = tmp;
+							Collections.shuffle(AbstractDungeon.uncommonRelicPool);
 							break;
 						case RARE:
 							tmp.add(relic.relicId.toString());
 							tmp.addAll(AbstractDungeon.rareRelicPool);
 							AbstractDungeon.rareRelicPool = tmp;
+							Collections.shuffle(AbstractDungeon.rareRelicPool);
 							break;
 						case SHOP:
 							tmp.add(relic.relicId.toString());
 							tmp.addAll(AbstractDungeon.shopRelicPool);
 							AbstractDungeon.shopRelicPool = tmp;
+							Collections.shuffle(AbstractDungeon.shopRelicPool);
 							break;
 						default:
 							logger.info("Unexpected Relic Tier: " + relic.tier);

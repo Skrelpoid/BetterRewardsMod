@@ -3,8 +3,8 @@
   "name": "BetterRewards",
   "author_list": ["Skrelpoid"],
   "description": "Adds an option to Neow where instead of getting standard rewards, you get rewards based on the score of your last run in a special shop.",
-  "version": "4.0.9",
-  "sts_version": "12-20-2018",
+  "version": "4.1.0",
+  "sts_version": "01-23-2019",
   "mts_version": "3.6.3",
   "dependencies": ["basemod"],
   "update_json": "https://api.github.com/repos/Skrelpoid/BetterRewardsMod/releases/latest"
