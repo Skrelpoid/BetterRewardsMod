@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,8 @@ import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.Circlet;
 import com.megacrit.cardcrawl.rooms.ShopRoom;
+import com.megacrit.cardcrawl.screens.options.DropdownMenu;
+import com.megacrit.cardcrawl.screens.runHistory.RunHistoryScreen;
 import com.megacrit.cardcrawl.screens.stats.RunData;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.shop.StoreRelic;
@@ -31,6 +34,8 @@ import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
 import basemod.ModToggleButton;
+import basemod.ReflectionHacks;
+import basemod.devcommands.history.History;
 import basemod.interfaces.PostInitializeSubscriber;
 import skrelpoid.betterrewards.events.BetterRewardsInfoEvent;
 import skrelpoid.betterrewards.shop.AbstractShopItem;
@@ -41,12 +46,12 @@ import skrelpoid.betterrewards.shop.RerollShopItem;
 @SpireInitializer
 public class BetterRewardsMod implements PostInitializeSubscriber {
 
-	public static final String[] UNWANTED_SPECIAL_RELICS = { "Circlet", "Red Circlet", "Spirit Poop" };
-	public static final String[] SCREEN_BOSS_RELICS = { "Calling Bell", "Orrery", "Tiny House" };
-	
-	
+	public static final String[] UNWANTED_SPECIAL_RELICS =
+			{"Circlet", "Red Circlet", "Spirit Poop"};
+	public static final String[] SCREEN_BOSS_RELICS = {"Calling Bell", "Orrery", "Tiny House"};
+	private static final int DEFAULT_SCORE = 1000;
+
 	public static boolean shouldShowButton = false;
-	public static boolean canGetRewards = false;
 	public static boolean alreadyStartedRewards = false;
 	public static boolean isGettingRewards = false;
 	public static boolean alreadyGotRewards = false;
@@ -54,7 +59,6 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static boolean eventNotFinished = false;
 	public static RunData lastRun;
 
-	public static RunHistory runHistory;
 	public static ArrayList<AbstractShopItem> shopItems;
 	public static boolean isNeowDone;
 	public static int playerGold;
@@ -69,7 +73,6 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static final Logger logger = LogManager.getLogger(BetterRewardsMod.class.getName());
 
 	public static void initialize() {
-		runHistory = new RunHistory();
 		BaseMod.subscribe(new BetterRewardsMod());
 	}
 
@@ -95,7 +98,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static boolean shouldShowInfo() {
 		return isGettingRewards && !alreadyStartedRewards && !alreadyGotRewards;
 	}
-	
+
 	public static boolean isCurrentlyInShop() {
 		return isGettingRewards && alreadyStartedRewards && !alreadyGotRewards;
 	}
@@ -107,25 +110,56 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 				((InfiniteSpeechBubble) e).dismiss();
 			}
 		}
+		BetterRewardsMod.updateLastRun();
 		logger.info("Showing BetterRewardsInfoEvent");
 		AbstractEvent info = new BetterRewardsInfoEvent();
 		AbstractDungeon.getCurrRoom().event = info;
 		AbstractDungeon.getCurrRoom().event.onEnterRoom();
 	}
 
-	public static void checkCanGetRewards(String playerName) {
-		lastRun = runHistory.getLastRunByCharacter(playerName);
-		canGetRewards = lastRun != null && lastRun.score > 0;
-		if (canGetRewards) {
-			logger.info(playerName + " had a score of " + lastRun.score + " last run, Therefore they can get rewards.");
-		} else {
-			logger.info(playerName + " can not get rewards.");
+	@SuppressWarnings("unchecked")
+	public static void updateLastRun() {
+		List<RunData> runs = null;
+		int character = History.characterIndex(AbstractDungeon.player);
+		RunHistoryScreen runHistory = new RunHistoryScreen();
+		runHistory.refreshData();
+
+		if (character > 0) {
+			((DropdownMenu) ReflectionHacks.getPrivate(runHistory, RunHistoryScreen.class,
+					"characterFilter")).setSelectedIndex(character);
 		}
+
+		try {
+			Method resetRunsDropdown =
+					RunHistoryScreen.class.getDeclaredMethod("resetRunsDropdown");
+			resetRunsDropdown.setAccessible(true);
+			resetRunsDropdown.invoke(runHistory);
+			runs = (List<RunData>) ReflectionHacks.getPrivate(runHistory, RunHistoryScreen.class, "filteredRuns");
+		} catch (Exception ex) {
+			logger.error("Could not load run", ex);
+		}
+
+		if (runs == null || runs.isEmpty()) {
+			lastRun = null;
+		} else {
+			try {
+				lastRun = runs.stream()
+						.sorted(RunData.orderByTimestampDesc)
+						.findFirst()
+						.get();
+			} catch (Exception ex) {
+				lastRun = runs.get(0);
+			}
+		}
+		if (lastRun == null || lastRun.score == 0) {
+			logger.info("No last run available, setting score to default: " + DEFAULT_SCORE);
+			lastRun = new RunData();
+			lastRun.score = DEFAULT_SCORE;
+		}
+		logger.info("Player had a score of " + lastRun.score
+				+ " last run, Therefore they can get rewards.");
 	}
 
-	public static void refreshRunHistory() {
-		runHistory.refreshData();
-	}
 
 	public static void finishedRewards() {
 		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards) {
@@ -259,28 +293,37 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	// From Merchant
 	private static ArrayList<AbstractCard> rollColoredCards() {
 		ArrayList<AbstractCard> cards = new ArrayList<>();
-		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
+		cards.add(AbstractDungeon
+				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
 				.makeCopy());
 
 		AbstractCard addCard = AbstractDungeon
-				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true).makeCopy();
-		while (Objects.equals(addCard.cardID, cards.get(cards.size() - 1).cardID)) {
-			addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
-					.makeCopy();
-		}
-		cards.add(addCard);
-
-		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
-				.makeCopy());
-		addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
 				.makeCopy();
 		while (Objects.equals(addCard.cardID, cards.get(cards.size() - 1).cardID)) {
-			addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+			addCard = AbstractDungeon
+					.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK,
+							true)
 					.makeCopy();
 		}
 		cards.add(addCard);
 
-		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.POWER, true)
+		cards.add(AbstractDungeon
+				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+				.makeCopy());
+		addCard = AbstractDungeon
+				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+				.makeCopy();
+		while (Objects.equals(addCard.cardID, cards.get(cards.size() - 1).cardID)) {
+			addCard = AbstractDungeon
+					.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL,
+							true)
+					.makeCopy();
+		}
+		cards.add(addCard);
+
+		cards.add(AbstractDungeon
+				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.POWER, true)
 				.makeCopy());
 		return cards;
 	}
@@ -288,8 +331,10 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	// From Merchant
 	private static ArrayList<AbstractCard> rollColorlessCards() {
 		ArrayList<AbstractCard> cards = new ArrayList<>();
-		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.UNCOMMON).makeCopy());
-		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.RARE).makeCopy());
+		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.UNCOMMON)
+				.makeCopy());
+		cards.add(
+				AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.RARE).makeCopy());
 		return cards;
 	}
 
@@ -308,8 +353,10 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public void receivePostInitialize() {
 		loadSettings();
 		ModPanel panel = new ModPanel();
-		ModLabeledToggleButton fun = new ModLabeledToggleButton("Enable FUN mode (No HP cost)", X, Y, Color.WHITE,
-				FontHelper.buttonLabelFont, isFunMode, panel, (l) -> {}, BetterRewardsMod::funToggle);
+		ModLabeledToggleButton fun =
+				new ModLabeledToggleButton("Enable FUN mode (No HP cost)", X, Y, Color.WHITE,
+						FontHelper.buttonLabelFont, isFunMode, panel, (l) -> {
+						}, BetterRewardsMod::funToggle);
 		panel.addUIElement(fun);
 		BaseMod.registerModBadge(new Texture("modBadge.png"), MOD_NAME, AUTHOR, DESCRIPTION, panel);
 

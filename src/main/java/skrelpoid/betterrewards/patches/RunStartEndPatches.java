@@ -8,11 +8,8 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireInsertLocator;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
-import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
-import com.megacrit.cardcrawl.neow.NeowRoom;
 import javassist.CtBehavior;
 import skrelpoid.betterrewards.BetterRewardsMod;
 
@@ -49,15 +46,4 @@ public class RunStartEndPatches {
 		
 	}
 
-	@SpirePatch(clz = NeowRoom.class, method = SpirePatch.CONSTRUCTOR)
-	public static class RunHistoryRefresh {
-		// before Neow is initialized, check if can get rewards
-		// should happen before every run, before Neow is shown
-		@SpirePrefixPatch
-		public static void Prefix(Object o, boolean b) {
-			AbstractPlayer.PlayerClass player = AbstractDungeon.player.chosenClass;
-			BetterRewardsMod.refreshRunHistory();
-			BetterRewardsMod.checkCanGetRewards(player.name());
-		}
-	}
 }

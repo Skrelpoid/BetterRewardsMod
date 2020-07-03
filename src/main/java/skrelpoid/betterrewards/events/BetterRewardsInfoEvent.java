@@ -34,30 +34,24 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
 	public BetterRewardsInfoEvent() {
 		super("BetterRewards", getBody(), "event/betterRewardsEvent.jpg");
+
 		BetterRewardsMod.eventNotFinished = true;
 		imageEventText.clearAllDialogs();
 		imageEventText.clearRemainingOptions();
 
 		imageEventText.setDialogOption("[Leave] Go to the Map.");
 		imageEventText.setDialogOption("[Turn Around] Return to Neow.");
-		if (BetterRewardsMod.canGetRewards) {
-			imageEventText.setDialogOption("[Take coins] #yPocket #ythe #ystrange #yGold.");
-		}
+		imageEventText.setDialogOption("[Take coins] #yPocket #ythe #ystrange #yGold.");
 	}
 
 	private static String getBody() {
 		String body = "You turned around, because you heard a strange noise behind you. "
 				+ "You see a Portal and a pot full of #yGold. NL "
 				+ "This #yGold looks strangely alien. You've never seen anything like it. "
-				+ "It probably can't be used in the Spire. ";
-		if (BetterRewardsMod.canGetRewards) {
-			body += " NL Your intuition tells you there's exactly " + BetterRewardsMod.lastRun.score
-					+ " coins in the pot.";
-		} else {
-			body += " NL As you approach the pot, it suddenly disappears! You can only spot a small note on the ground: "
-					+ "~S~ ~C~ ~O~ ~R~ ~E~ NL "
-					+ "(Your last run with this character didn't have enough score!)";
-		}
+				+ "It probably can't be used in the Spire. "
+				+ " NL Your intuition tells you there's exactly " + BetterRewardsMod.lastRun.score
+				+ " coins in the pot.";
+
 		return body;
 	}
 
