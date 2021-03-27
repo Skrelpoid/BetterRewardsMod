@@ -8,8 +8,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -30,6 +32,7 @@ import com.megacrit.cardcrawl.screens.stats.RunData;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.InfiniteSpeechBubble;
+
 import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
@@ -56,7 +59,6 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static boolean isGettingRewards = false;
 	public static boolean alreadyGotRewards = false;
 	public static boolean isFunMode = false;
-	public static boolean eventNotFinished = false;
 	public static RunData lastRun;
 
 	public static ArrayList<AbstractShopItem> shopItems;
@@ -75,7 +77,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static void initialize() {
 		BaseMod.subscribe(new BetterRewardsMod());
 	}
-
+	
 	public static void setIsGettingRewards(boolean b) {
 		isGettingRewards = b;
 		alreadyGotRewards = false;
@@ -84,11 +86,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 
 	public static void startRewards(AbstractEvent e) {
 		alreadyStartedRewards = true;
-		BetterRewardsMod.eventNotFinished = true;
-		// Probably only one of these is needed
-		e.imageEventText.updateBodyText("");
 		e.imageEventText.clearAllDialogs();
-		e.imageEventText.clearRemainingOptions();
 		GenericEventDialog.hide();
 		ShopRoom room = new ShopRoom();
 		AbstractDungeon.currMapNode.room = room;
@@ -230,7 +228,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 			coloredCards.set(shopScreen, rollColoredCards());
 			Method initCards = ShopScreen.class.getDeclaredMethod("initCards");
 			initCards.setAccessible(true);
-			initCards.invoke(shopScreen, new Object[] {});
+			initCards.invoke(shopScreen);
 
 			ArrayList<StoreRelic> relics = new ArrayList<>();
 			Field shopRelics = ShopScreen.class.getDeclaredField("relics");
@@ -282,6 +280,10 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 
 			shopScreen.purgeAvailable = true;
 
+			Method setStartingCardPositions = ShopScreen.class.getDeclaredMethod("setStartingCardPositions");
+			setStartingCardPositions.setAccessible(true);
+			setStartingCardPositions.invoke(shopScreen);
+			
 			for (AbstractShopItem i : shopItems) {
 				i.setVisible(true);
 			}

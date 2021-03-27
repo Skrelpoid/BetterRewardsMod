@@ -31,7 +31,7 @@ public class NeowEventPatches {
 		@SpirePostfixPatch
 		public static void Postfix(NeowRoom room, boolean b) {
 			BetterRewardsMod.isNeowDone = b;
-			if (!Settings.isDailyRun && !b && BetterRewardsMod.shouldShowButton) {
+			if (!Settings.isDailyRun && !Settings.isTrial && !BetterRewardsMod.isNeowDone && BetterRewardsMod.shouldShowButton) {
 				BetterRewardsMod.shouldShowButton = false;
 				BetterRewardsMod.button = RoomEventDialog.optionList.size();
 				room.event.roomEventText.addDialogOption("[Turn Around]");
@@ -55,17 +55,7 @@ public class NeowEventPatches {
 				Field screenNumField = NeowEvent.class.getDeclaredField("screenNum");
 				screenNumField.setAccessible(true);
 				int sn = screenNumField.getInt(e);
-				if (buttonPressed == BetterRewardsMod.button && acceptableScreenNum(sn)) {
-					BetterRewardsMod.setIsGettingRewards(true);
-					// screenNum = 99 is the default value for leave event. This
-					// calls openMap, which is patched to start a BetterRewards
-					screenNumField.setInt(e, 99);
-				} else {
-					BetterRewardsMod.setIsGettingRewards(false);
-					if (sn != 3 && RoomEventDialog.optionList.size() > 1) {
-						e.roomEventText.removeDialogOption(BetterRewardsMod.button);
-					}
-				}
+				maybeStartRewards(e, buttonPressed, screenNumField, sn);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -82,17 +72,7 @@ public class NeowEventPatches {
 				Field screenNumField = heartEventClass.getDeclaredField("screenNum");
 				screenNumField.setAccessible(true);
 				int sn = screenNumField.getInt(e);
-				if (buttonPressed == BetterRewardsMod.button && acceptableScreenNum(sn)) {
-					BetterRewardsMod.setIsGettingRewards(true);
-					// screenNum = 99 is the default value for leave event. This
-					// calls openMap, which is patched to start a BetterRewards
-					screenNumField.setInt(e, 99);
-				} else {
-					BetterRewardsMod.setIsGettingRewards(false);
-					if (sn != 3 && RoomEventDialog.optionList.size() > 1) {
-						e.roomEventText.removeDialogOption(BetterRewardsMod.button);
-					}
-				}
+				maybeStartRewards(e, buttonPressed, screenNumField, sn);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -103,5 +83,20 @@ public class NeowEventPatches {
 	// screenNum = 0, 1 or 2 mean talk option
 	private static boolean acceptableScreenNum(int sn) {
 		return sn == 0 || sn == 1 || sn == 2;
+	}
+
+	private static void maybeStartRewards(AbstractEvent e, int buttonPressed, Field screenNumField, int sn)
+			throws IllegalAccessException {
+		if (buttonPressed == BetterRewardsMod.button && acceptableScreenNum(sn)) {
+			BetterRewardsMod.setIsGettingRewards(true);
+			// screenNum = 99 is the default value for leave event. This
+			// calls openMap, which is patched to start a BetterRewards
+			screenNumField.setInt(e, 99);
+		} else {
+			BetterRewardsMod.setIsGettingRewards(false);
+			if (sn != 3 && RoomEventDialog.optionList.size() > 1) {
+				e.roomEventText.removeDialogOption(BetterRewardsMod.button);
+			}
+		}
 	}
 }
