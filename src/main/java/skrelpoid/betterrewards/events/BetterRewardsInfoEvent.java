@@ -1,8 +1,12 @@
 package skrelpoid.betterrewards.events;
 
+import java.lang.reflect.Constructor;
+
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.AbstractImageEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.events.RoomEventDialog;
@@ -40,8 +44,15 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		imageEventText.clearRemainingOptions();
 
 		imageEventText.setDialogOption("[Leave] Go to the Map.");
-		imageEventText.setDialogOption("[Turn Around] Return to Neow.");
+		imageEventText.setDialogOption(getNeowOrHeartText());
 		imageEventText.setDialogOption("[Take coins] #yPocket #ythe #ystrange #yGold.");
+	}
+
+	private String getNeowOrHeartText() {
+		if (Loader.isModLoaded("downfall")) {
+			return "[Turn Around] Return to the Heart.";
+		}
+		return "[Turn Around] Return to Neow.";
 	}
 
 	private static String getBody() {
@@ -85,7 +96,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 						imageEventText.clearAllDialogs();
 						imageEventText.clearRemainingOptions();
 						GenericEventDialog.hide();
-						NeowEvent event = new NeowEvent(BetterRewardsMod.isNeowDone);
+						AbstractEvent event = getNeowOrHeartEvent();
 						AbstractDungeon.currMapNode.room.event = event;
 						event.onEnterRoom();
 						break;
@@ -115,6 +126,19 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 				break;
 		}
 
+	}
+
+	private AbstractEvent getNeowOrHeartEvent() {
+		if (Loader.isModLoaded("downfall")) {
+			try {
+				Class<? extends AbstractEvent> heartEventClass = Class.forName("downfall.events.HeartEvent").asSubclass(AbstractEvent.class);
+				Constructor<? extends AbstractEvent> constructor = heartEventClass.getConstructor(Boolean.class);
+				return constructor.newInstance(BetterRewardsMod.isNeowDone);
+			} catch (Exception ex) {
+				BetterRewardsMod.logger.error("Could not load or instantiate Downfall HeartEvent", ex);
+			}
+		}
+		return new NeowEvent(BetterRewardsMod.isNeowDone);
 	}
 
 	@Override
