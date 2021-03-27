@@ -1,6 +1,7 @@
 package skrelpoid.betterrewards.events;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.Loader;
@@ -11,6 +12,7 @@ import com.megacrit.cardcrawl.events.AbstractImageEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.events.RoomEventDialog;
 import com.megacrit.cardcrawl.neow.NeowEvent;
+
 import skrelpoid.betterrewards.BetterRewardsMod;
 import skrelpoid.betterrewards.GoldHelper;
 
@@ -49,7 +51,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 	}
 
 	private String getNeowOrHeartText() {
-		if (Loader.isModLoaded("downfall")) {
+		if (Loader.isModLoaded("downfall") && isDownfallEvilMode()) {
 			return "[Turn Around] Return to the Heart.";
 		}
 		return "[Turn Around] Return to Neow.";
@@ -59,9 +61,8 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		String body = "You turned around, because you heard a strange noise behind you. "
 				+ "You see a Portal and a pot full of #yGold. NL "
 				+ "This #yGold looks strangely alien. You've never seen anything like it. "
-				+ "It probably can't be used in the Spire. "
-				+ " NL Your intuition tells you there's exactly " + BetterRewardsMod.lastRun.score
-				+ " coins in the pot.";
+				+ "It probably can't be used in the Spire. " + " NL Your intuition tells you there's exactly "
+				+ BetterRewardsMod.lastRun.score + " coins in the pot.";
 
 		return body;
 	}
@@ -74,56 +75,56 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 	@Override
 	protected void buttonEffect(int buttonPressed) {
 		switch (state) {
-			case INFO:
-				switch (buttonPressed) {
-					case GO_TO_MAP:
-						openMap();
-						break;
-					case TAKE_GOLD:
-						BetterRewardsMod.playerGold = AbstractDungeon.player.gold;
-						maxGold = BetterRewardsMod.lastRun.score;
-						gold = BetterRewardsMod.isFunMode ? maxGold : GoldHelper.getGold(maxGold);
-						AbstractDungeon.player.gold = gold;
-						goldPercent = gold / (double) maxGold;
-						if (AbstractDungeon.player.gold < maxGold) {
-							startScaledGold();
-						} else {
-							finish();
-						}
-						break;
-					case GO_TO_NEOW:
-						BetterRewardsMod.setIsGettingRewards(false);
-						imageEventText.clearAllDialogs();
-						imageEventText.clearRemainingOptions();
-						GenericEventDialog.hide();
-						AbstractEvent event = getNeowOrHeartEvent();
-						AbstractDungeon.currMapNode.room.event = event;
-						event.onEnterRoom();
-						break;
-					default:
-						openMap();
-						break;
+		case INFO:
+			switch (buttonPressed) {
+			case GO_TO_MAP:
+				openMap();
+				break;
+			case TAKE_GOLD:
+				BetterRewardsMod.playerGold = AbstractDungeon.player.gold;
+				maxGold = BetterRewardsMod.lastRun.score;
+				gold = BetterRewardsMod.isFunMode ? maxGold : GoldHelper.getGold(maxGold);
+				AbstractDungeon.player.gold = gold;
+				goldPercent = gold / (double) maxGold;
+				if (AbstractDungeon.player.gold < maxGold) {
+					startScaledGold();
+				} else {
+					finish();
 				}
 				break;
-			case SCALED_GOLD:
-				switch (buttonPressed) {
-					case ENTER_PORTAL:
-						BetterRewardsMod.startRewards(this);
-						break;
-					case GET_MORE_GOLD:
-						getMoreGold();
-						break;
-					default:
-						BetterRewardsMod.startRewards(this);
-						break;
-				}
-				break;
-			case FINISHED:
-				BetterRewardsMod.startRewards(this);
+			case GO_TO_NEOW:
+				BetterRewardsMod.setIsGettingRewards(false);
+				imageEventText.clearAllDialogs();
+				imageEventText.clearRemainingOptions();
+				GenericEventDialog.hide();
+				AbstractEvent event = getNeowOrHeartEvent();
+				AbstractDungeon.currMapNode.room.event = event;
+				event.onEnterRoom();
 				break;
 			default:
 				openMap();
 				break;
+			}
+			break;
+		case SCALED_GOLD:
+			switch (buttonPressed) {
+			case ENTER_PORTAL:
+				BetterRewardsMod.startRewards(this);
+				break;
+			case GET_MORE_GOLD:
+				getMoreGold();
+				break;
+			default:
+				BetterRewardsMod.startRewards(this);
+				break;
+			}
+			break;
+		case FINISHED:
+			BetterRewardsMod.startRewards(this);
+			break;
+		default:
+			openMap();
+			break;
 		}
 
 	}
@@ -131,14 +132,28 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 	private AbstractEvent getNeowOrHeartEvent() {
 		if (Loader.isModLoaded("downfall")) {
 			try {
-				Class<? extends AbstractEvent> heartEventClass = Class.forName("downfall.events.HeartEvent").asSubclass(AbstractEvent.class);
-				Constructor<? extends AbstractEvent> constructor = heartEventClass.getConstructor(Boolean.class);
-				return constructor.newInstance(BetterRewardsMod.isNeowDone);
+				if (isDownfallEvilMode()) {
+					Class<? extends AbstractEvent> heartEventClass = Class.forName("downfall.events.HeartEvent")
+							.asSubclass(AbstractEvent.class);
+					Constructor<? extends AbstractEvent> constructor = heartEventClass.getConstructor(Boolean.TYPE);
+					return constructor.newInstance(BetterRewardsMod.isNeowDone);
+				}
 			} catch (Exception ex) {
 				BetterRewardsMod.logger.error("Could not load or instantiate Downfall HeartEvent", ex);
 			}
 		}
 		return new NeowEvent(BetterRewardsMod.isNeowDone);
+	}
+
+	private boolean isDownfallEvilMode() {
+		try {
+			Class<?> evilModeCharactersClass = Class.forName("downfall.patches.EvilModeCharacterSelect");
+			Field evilMode = evilModeCharactersClass.getDeclaredField("evilMode");
+			return evilMode.getBoolean(evilModeCharactersClass);
+		} catch (Exception ex) {
+			BetterRewardsMod.logger.error("Could not load or instantiate Downfall EvilModeCharacterSelect", ex);
+		}
+		return false;
 	}
 
 	@Override
@@ -175,8 +190,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		calculateHPandGold();
 		imageEventText.clearAllDialogs();
 		imageEventText.setDialogOption("[Enter Portal] Leave with the #yGold you have.");
-		imageEventText.setDialogOption(
-				"[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
+		imageEventText.setDialogOption("[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
 	}
 
 	private void calculateHPandGold() {
