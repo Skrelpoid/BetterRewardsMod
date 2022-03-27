@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
@@ -26,6 +27,8 @@ import com.megacrit.cardcrawl.helpers.RelicLibrary;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.Circlet;
 import com.megacrit.cardcrawl.rooms.ShopRoom;
+import com.megacrit.cardcrawl.screens.custom.CustomMod;
+import com.megacrit.cardcrawl.screens.custom.CustomModeScreen;
 import com.megacrit.cardcrawl.screens.options.DropdownMenu;
 import com.megacrit.cardcrawl.screens.runHistory.RunHistoryScreen;
 import com.megacrit.cardcrawl.screens.stats.RunData;
@@ -59,6 +62,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static boolean isGettingRewards = false;
 	public static boolean alreadyGotRewards = false;
 	public static boolean isFunMode = false;
+	public static CustomMod customMod;
 	public static RunData lastRun;
 
 	public static ArrayList<AbstractShopItem> shopItems;
@@ -386,6 +390,23 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 			logger.catching(ex);
 		}
 		isFunMode = config.getBool("isFunMode");
+	}
+
+	public static void addCustomModeMods(CustomModeScreen screen, CustomMod sealedMod, CustomMod draftMod) {
+		customMod = new CustomMod("BetterRewards", "b", false);
+		customMod.name = "BetterRewards";
+		customMod.description = "Get the Better Rewards event at the start of your run";
+		String label = FontHelper.colorString("[" + customMod.name + "]", customMod.color) + " " + customMod.description;
+		ReflectionHacks.setPrivate(customMod, CustomMod.class, "label", label);
+		float height = -FontHelper.getSmartHeight(FontHelper.charDescFont, label, 1050.0F * Settings.scale, 32.0F * Settings.scale) + 70.0F * Settings.scale;
+		ReflectionHacks.setPrivate(customMod, CustomMod.class, "height", height);
+		customMod.setMutualExclusionPair(sealedMod);
+		customMod.setMutualExclusionPair(draftMod);
+		ReflectionHacks.<List<CustomMod>>getPrivate(screen, CustomModeScreen.class, "modList").add(customMod);
+	}
+
+	public static boolean isCustomModEnabled() {
+		return customMod.selected || (!Settings.isDailyRun && !Settings.isTrial);
 	}
 
 	// TODO FIX rewardsscreen in shop sometimes forces player to leave for now

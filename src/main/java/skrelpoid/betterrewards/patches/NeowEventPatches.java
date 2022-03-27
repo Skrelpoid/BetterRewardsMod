@@ -31,7 +31,7 @@ public class NeowEventPatches {
 		@SpirePostfixPatch
 		public static void Postfix(NeowRoom room, boolean b) {
 			BetterRewardsMod.isNeowDone = b;
-			if (!Settings.isDailyRun && !Settings.isTrial && !BetterRewardsMod.isNeowDone && BetterRewardsMod.shouldShowButton) {
+			if (BetterRewardsMod.isCustomModEnabled() && !BetterRewardsMod.isNeowDone && BetterRewardsMod.shouldShowButton) {
 				BetterRewardsMod.shouldShowButton = false;
 				BetterRewardsMod.button = RoomEventDialog.optionList.size();
 				room.event.roomEventText.addDialogOption("[Turn Around]");
@@ -81,8 +81,9 @@ public class NeowEventPatches {
 	}
 
 	// screenNum = 0, 1 or 2 mean talk option
+	// 10 is only ok for trial (Custom Mode) I think
 	private static boolean acceptableScreenNum(int sn) {
-		return sn == 0 || sn == 1 || sn == 2;
+		return sn == 0 || sn == 1 || sn == 2 || (Settings.isTrial && sn == 10);
 	}
 
 	private static void maybeStartRewards(AbstractEvent e, int buttonPressed, Field screenNumField, int sn)
