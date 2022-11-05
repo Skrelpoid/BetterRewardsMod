@@ -216,7 +216,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 		} else {
 			String relicToRemove = bossRelics.remove(0);
 			AbstractDungeon.bossRelicPool.remove(relicToRemove);
-			return RelicLibrary.getRelic(relicToRemove);
+			return RelicLibrary.getRelic(relicToRemove).makeCopy();
 		}
 	}
 
@@ -245,25 +245,25 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 					ArrayList<String> tmp = new ArrayList<>();
 					switch (relic.tier) {
 						case COMMON:
-							tmp.add(relic.relicId.toString());
+							tmp.add(relic.relicId);
 							tmp.addAll(AbstractDungeon.commonRelicPool);
 							AbstractDungeon.commonRelicPool = tmp;
 							Collections.shuffle(AbstractDungeon.commonRelicPool);
 							break;
 						case UNCOMMON:
-							tmp.add(relic.relicId.toString());
+							tmp.add(relic.relicId);
 							tmp.addAll(AbstractDungeon.uncommonRelicPool);
 							AbstractDungeon.uncommonRelicPool = tmp;
 							Collections.shuffle(AbstractDungeon.uncommonRelicPool);
 							break;
 						case RARE:
-							tmp.add(relic.relicId.toString());
+							tmp.add(relic.relicId);
 							tmp.addAll(AbstractDungeon.rareRelicPool);
 							AbstractDungeon.rareRelicPool = tmp;
 							Collections.shuffle(AbstractDungeon.rareRelicPool);
 							break;
 						case SHOP:
-							tmp.add(relic.relicId.toString());
+							tmp.add(relic.relicId);
 							tmp.addAll(AbstractDungeon.shopRelicPool);
 							AbstractDungeon.shopRelicPool = tmp;
 							Collections.shuffle(AbstractDungeon.shopRelicPool);
