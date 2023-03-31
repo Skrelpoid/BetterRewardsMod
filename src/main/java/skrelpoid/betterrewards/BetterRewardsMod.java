@@ -52,9 +52,8 @@ import skrelpoid.betterrewards.shop.RerollShopItem;
 @SpireInitializer
 public class BetterRewardsMod implements PostInitializeSubscriber {
 
-	public static final String[] UNWANTED_SPECIAL_RELICS =
-			{"Circlet", "Red Circlet", "Spirit Poop"};
-	public static final String[] SCREEN_BOSS_RELICS = {"Calling Bell", "Orrery", "Tiny House"};
+	public static final String[] UNWANTED_SPECIAL_RELICS = { "Circlet", "Red Circlet", "Spirit Poop" };
+	public static final String[] SCREEN_BOSS_RELICS = { "Calling Bell", "Orrery", "Tiny House" };
 	private static final int DEFAULT_SCORE = 1000;
 
 	public static boolean shouldShowButton = false;
@@ -81,7 +80,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static void initialize() {
 		BaseMod.subscribe(new BetterRewardsMod());
 	}
-	
+
 	public static void setIsGettingRewards(boolean b) {
 		isGettingRewards = b;
 		alreadyGotRewards = false;
@@ -123,17 +122,16 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static void updateLastRun() {
 		List<RunData> runs = null;
 		int character = History.characterIndex(AbstractDungeon.player);
-		RunHistoryScreen runHistory = new RunHistoryScreen();
-		runHistory.refreshData();
-
-		if (character > 0) {
-			((DropdownMenu) ReflectionHacks.getPrivate(runHistory, RunHistoryScreen.class,
-					"characterFilter")).setSelectedIndex(character);
-		}
-
 		try {
-			Method resetRunsDropdown =
-					RunHistoryScreen.class.getDeclaredMethod("resetRunsDropdown");
+			RunHistoryScreen runHistory = new RunHistoryScreen();
+			runHistory.refreshData();
+
+			if (character > 0) {
+				((DropdownMenu) ReflectionHacks.getPrivate(runHistory, RunHistoryScreen.class, "characterFilter"))
+						.setSelectedIndex(character);
+			}
+
+			Method resetRunsDropdown = RunHistoryScreen.class.getDeclaredMethod("resetRunsDropdown");
 			resetRunsDropdown.setAccessible(true);
 			resetRunsDropdown.invoke(runHistory);
 			runs = (List<RunData>) ReflectionHacks.getPrivate(runHistory, RunHistoryScreen.class, "filteredRuns");
@@ -145,10 +143,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 			lastRun = null;
 		} else {
 			try {
-				lastRun = runs.stream()
-						.sorted(RunData.orderByTimestampDesc)
-						.findFirst()
-						.get();
+				lastRun = runs.stream().sorted(RunData.orderByTimestampDesc).findFirst().get();
 			} catch (Exception ex) {
 				lastRun = runs.get(0);
 			}
@@ -158,10 +153,8 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 			lastRun = new RunData();
 			lastRun.score = DEFAULT_SCORE;
 		}
-		logger.info("Player had a score of " + lastRun.score
-				+ " last run, Therefore they can get rewards.");
+		logger.info("Player had a score of " + lastRun.score + " last run, Therefore they can get rewards.");
 	}
-
 
 	public static void finishedRewards() {
 		if (isGettingRewards && alreadyStartedRewards && !alreadyGotRewards) {
@@ -244,33 +237,33 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 				if (relic != null && !AbstractDungeon.player.hasRelic(relic.relicId)) {
 					ArrayList<String> tmp = new ArrayList<>();
 					switch (relic.tier) {
-						case COMMON:
-							tmp.add(relic.relicId);
-							tmp.addAll(AbstractDungeon.commonRelicPool);
-							AbstractDungeon.commonRelicPool = tmp;
-							Collections.shuffle(AbstractDungeon.commonRelicPool);
-							break;
-						case UNCOMMON:
-							tmp.add(relic.relicId);
-							tmp.addAll(AbstractDungeon.uncommonRelicPool);
-							AbstractDungeon.uncommonRelicPool = tmp;
-							Collections.shuffle(AbstractDungeon.uncommonRelicPool);
-							break;
-						case RARE:
-							tmp.add(relic.relicId);
-							tmp.addAll(AbstractDungeon.rareRelicPool);
-							AbstractDungeon.rareRelicPool = tmp;
-							Collections.shuffle(AbstractDungeon.rareRelicPool);
-							break;
-						case SHOP:
-							tmp.add(relic.relicId);
-							tmp.addAll(AbstractDungeon.shopRelicPool);
-							AbstractDungeon.shopRelicPool = tmp;
-							Collections.shuffle(AbstractDungeon.shopRelicPool);
-							break;
-						default:
-							logger.info("Unexpected Relic Tier: " + relic.tier);
-							break;
+					case COMMON:
+						tmp.add(relic.relicId);
+						tmp.addAll(AbstractDungeon.commonRelicPool);
+						AbstractDungeon.commonRelicPool = tmp;
+						Collections.shuffle(AbstractDungeon.commonRelicPool);
+						break;
+					case UNCOMMON:
+						tmp.add(relic.relicId);
+						tmp.addAll(AbstractDungeon.uncommonRelicPool);
+						AbstractDungeon.uncommonRelicPool = tmp;
+						Collections.shuffle(AbstractDungeon.uncommonRelicPool);
+						break;
+					case RARE:
+						tmp.add(relic.relicId);
+						tmp.addAll(AbstractDungeon.rareRelicPool);
+						AbstractDungeon.rareRelicPool = tmp;
+						Collections.shuffle(AbstractDungeon.rareRelicPool);
+						break;
+					case SHOP:
+						tmp.add(relic.relicId);
+						tmp.addAll(AbstractDungeon.shopRelicPool);
+						AbstractDungeon.shopRelicPool = tmp;
+						Collections.shuffle(AbstractDungeon.shopRelicPool);
+						break;
+					default:
+						logger.info("Unexpected Relic Tier: " + relic.tier);
+						break;
 					}
 				}
 			}
@@ -287,7 +280,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 			Method setStartingCardPositions = ShopScreen.class.getDeclaredMethod("setStartingCardPositions");
 			setStartingCardPositions.setAccessible(true);
 			setStartingCardPositions.invoke(shopScreen);
-			
+
 			for (AbstractShopItem i : shopItems) {
 				i.setVisible(true);
 			}
@@ -299,37 +292,28 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	// From Merchant
 	private static ArrayList<AbstractCard> rollColoredCards() {
 		ArrayList<AbstractCard> cards = new ArrayList<>();
-		cards.add(AbstractDungeon
-				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
+		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
 				.makeCopy());
 
 		AbstractCard addCard = AbstractDungeon
-				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
-				.makeCopy();
+				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true).makeCopy();
 		while (Objects.equals(addCard.cardID, cards.get(cards.size() - 1).cardID)) {
-			addCard = AbstractDungeon
-					.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK,
-							true)
+			addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.ATTACK, true)
 					.makeCopy();
 		}
 		cards.add(addCard);
 
-		cards.add(AbstractDungeon
-				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
 				.makeCopy());
-		addCard = AbstractDungeon
-				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
+		addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
 				.makeCopy();
 		while (Objects.equals(addCard.cardID, cards.get(cards.size() - 1).cardID)) {
-			addCard = AbstractDungeon
-					.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL,
-							true)
+			addCard = AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.SKILL, true)
 					.makeCopy();
 		}
 		cards.add(addCard);
 
-		cards.add(AbstractDungeon
-				.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.POWER, true)
+		cards.add(AbstractDungeon.getCardFromPool(AbstractDungeon.rollRarity(), AbstractCard.CardType.POWER, true)
 				.makeCopy());
 		return cards;
 	}
@@ -337,10 +321,8 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	// From Merchant
 	private static ArrayList<AbstractCard> rollColorlessCards() {
 		ArrayList<AbstractCard> cards = new ArrayList<>();
-		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.UNCOMMON)
-				.makeCopy());
-		cards.add(
-				AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.RARE).makeCopy());
+		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.UNCOMMON).makeCopy());
+		cards.add(AbstractDungeon.getColorlessCardFromPool(AbstractCard.CardRarity.RARE).makeCopy());
 		return cards;
 	}
 
@@ -359,10 +341,9 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public void receivePostInitialize() {
 		loadSettings();
 		ModPanel panel = new ModPanel();
-		ModLabeledToggleButton fun =
-				new ModLabeledToggleButton("Enable FUN mode (No HP cost)", X, Y, Color.WHITE,
-						FontHelper.buttonLabelFont, isFunMode, panel, (l) -> {
-						}, BetterRewardsMod::funToggle);
+		ModLabeledToggleButton fun = new ModLabeledToggleButton("Enable FUN mode (No HP cost)", X, Y, Color.WHITE,
+				FontHelper.buttonLabelFont, isFunMode, panel, (l) -> {
+				}, BetterRewardsMod::funToggle);
 		panel.addUIElement(fun);
 		BaseMod.registerModBadge(new Texture("modBadge.png"), MOD_NAME, AUTHOR, DESCRIPTION, panel);
 
@@ -396,9 +377,11 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 		customMod = new CustomMod("BetterRewards", "b", false);
 		customMod.name = "BetterRewards";
 		customMod.description = "Get the Better Rewards event at the start of your run";
-		String label = FontHelper.colorString("[" + customMod.name + "]", customMod.color) + " " + customMod.description;
+		String label = FontHelper.colorString("[" + customMod.name + "]", customMod.color) + " "
+				+ customMod.description;
 		ReflectionHacks.setPrivate(customMod, CustomMod.class, "label", label);
-		float height = -FontHelper.getSmartHeight(FontHelper.charDescFont, label, 1050.0F * Settings.scale, 32.0F * Settings.scale) + 70.0F * Settings.scale;
+		float height = -FontHelper.getSmartHeight(FontHelper.charDescFont, label, 1050.0F * Settings.scale,
+				32.0F * Settings.scale) + 70.0F * Settings.scale;
 		ReflectionHacks.setPrivate(customMod, CustomMod.class, "height", height);
 		customMod.setMutualExclusionPair(sealedMod);
 		customMod.setMutualExclusionPair(draftMod);
