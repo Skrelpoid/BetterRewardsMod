@@ -192,7 +192,7 @@ public class LootboxShopItem extends AbstractShopItem {
 				AbstractDungeon.transformCard(card);
 				AbstractCard transformedCard = AbstractDungeon.getTransformedCard();
 				AbstractDungeon.effectsQueue.add(
-						new ShowCardAndObtainEffect(transformedCard, Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
+						new ShowCardAndObtainEffect(transformedCard.makeCopy(), Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
 				String transformedName = transformedCard.name;
 				logger.info("transform");
 				displayLastRoll("A Card from your Deck was transformed: " + oldName + " -> " + transformedName + ".");
@@ -254,7 +254,7 @@ public class LootboxShopItem extends AbstractShopItem {
 		}
 		// if reached this point, something went wrong
 		logger.info("This should not have happened. Giving player relic as backup");
-		AbstractRelic relic = AbstractDungeon.returnRandomScreenlessRelic(AbstractDungeon.returnRandomRelicTier());
+		AbstractRelic relic = AbstractDungeon.returnRandomScreenlessRelic(AbstractDungeon.returnRandomRelicTier()).makeCopy();
 		AbstractDungeon.getCurrRoom().spawnRelicAndObtain(Settings.WIDTH / 2, Settings.HEIGHT / 2, relic);
 		displayLastRoll("You got a Relic: " + relic.name + ".");
 	}
