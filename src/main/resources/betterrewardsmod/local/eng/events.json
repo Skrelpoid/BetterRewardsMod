@@ -1,0 +1,24 @@
+{
+	"betterrewardsmod:Better_Rewards_Event": {
+		"NAME": "Better Rewards",
+		"DESCRIPTIONS": [
+			"You turned around, because you heard a strange noise behind you. You see a Portal and a pot full of #yGold. NL This #yGold looks strangely alien. You've never seen anything like it. It probably can't be used in the Spire. NL Your intuition tells you there's exactly #y",
+			" #ycoins in the pot.",
+			"There's still some #yGold left. ",
+			"As you try to pick up the pot of #yGold, it breaks. All the strange #ycoins fell on the ground. You pick up #y",
+			" #ycoins. Unfortunately, some of the #ycoins rolled away and into some #rspikes. ",
+			"You pocketed all the #yGold. There's nothing of it left."
+		],
+		"OPTIONS": [
+			"[Leave] Go to the Map.",
+			"[Turn Around] Return to the Heart.",
+			"[Turn Around] Return to Neow.",
+			"[Take coins] #yPocket #ythe #ystrange #yGold.",
+			"[Grab more Gold] #rLose #r",
+			" #rHP. #yGet #y",
+			"#yGold.",
+			"[Enter Portal] Leave with the #yGold you have.",
+			"[Enter Portal] Go through it and see where you end up."
+		]
+	}
+}

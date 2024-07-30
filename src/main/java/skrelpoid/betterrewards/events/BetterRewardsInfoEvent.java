@@ -5,11 +5,13 @@ import java.lang.reflect.Field;
 
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.megacrit.cardcrawl.cards.DamageInfo;
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.AbstractImageEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.events.RoomEventDialog;
+import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.neow.NeowEvent;
 
 import skrelpoid.betterrewards.BetterRewardsMod;
@@ -17,6 +19,13 @@ import skrelpoid.betterrewards.GoldHelper;
 
 public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
+	public static final String ID = "betterrewardsmod:Better_Rewards_Event";
+	
+	private static final EventStrings eventStrings = CardCrawlGame.languagePack.getEventString(ID);
+	private static final String NAME = eventStrings.NAME;
+	private static final String[] DESCRIPTIONS = eventStrings.DESCRIPTIONS;
+	private static final String[] OPTIONS = eventStrings.OPTIONS;
+	
 	public static final int ENTER_PORTAL = 0;
 	public static final int GET_MORE_GOLD = 1;
 
@@ -39,29 +48,25 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 	private int loseHP;
 
 	public BetterRewardsInfoEvent() {
-		super("BetterRewards", getBody(), "event/betterRewardsEvent.jpg");
+		super(NAME, getBody(), "event/betterRewardsEvent.jpg");
 
 		imageEventText.clearAllDialogs();
 		imageEventText.clearRemainingOptions();
 
-		imageEventText.setDialogOption("[Leave] Go to the Map.");
+		imageEventText.setDialogOption(OPTIONS[0]);
 		imageEventText.setDialogOption(getNeowOrHeartText());
-		imageEventText.setDialogOption("[Take coins] #yPocket #ythe #ystrange #yGold.");
+		imageEventText.setDialogOption(OPTIONS[3]);
 	}
 
 	private String getNeowOrHeartText() {
 		if (Loader.isModLoaded("downfall") && isDownfallEvilMode()) {
-			return "[Turn Around] Return to the Heart.";
+			return OPTIONS[1];
 		}
-		return "[Turn Around] Return to Neow.";
+		return OPTIONS[2];
 	}
 
 	private static String getBody() {
-		String body = "You turned around, because you heard a strange noise behind you. "
-				+ "You see a Portal and a pot full of #yGold. NL "
-				+ "This #yGold looks strangely alien. You've never seen anything like it. "
-				+ "It probably can't be used in the Spire. " + " NL Your intuition tells you there's exactly "
-				+ BetterRewardsMod.lastRun.score + " coins in the pot.";
+		String body = DESCRIPTIONS[0] + BetterRewardsMod.lastRun.score + DESCRIPTIONS[1];
 
 		return body;
 	}
@@ -164,21 +169,19 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 		} else {
 			state = SCALED_GOLD;
 			calculateHPandGold();
-			imageEventText.updateBodyText("There's still some #yGold left. ");
+			imageEventText.updateBodyText(DESCRIPTIONS[2]);
 			imageEventText.updateDialogOption(GET_MORE_GOLD,
-					"[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
+					OPTIONS[4] + loseHP + OPTIONS[5] + gold + OPTIONS[6]);
 		}
 	}
 
 	private void startScaledGold() {
 		state = SCALED_GOLD;
-		imageEventText.updateBodyText("As you try to pick up the pot of #yGold, it breaks. "
-				+ "All the strange coins fell on the ground. You pick up " + gold + " coins. "
-				+ "Unfortunately, some of the coins rolled away and into some spikes. ");
+		imageEventText.updateBodyText(DESCRIPTIONS[3] + gold + DESCRIPTIONS[4]);
 		calculateHPandGold();
 		imageEventText.clearAllDialogs();
-		imageEventText.setDialogOption("[Enter Portal] Leave with the #yGold you have.");
-		imageEventText.setDialogOption("[Grab more Gold] #rLose #r" + loseHP + " #rHP. #yGet #y" + gold + " #yGold.");
+		imageEventText.setDialogOption(OPTIONS[7]);
+		imageEventText.setDialogOption(OPTIONS[4] + loseHP + OPTIONS[5] + gold + OPTIONS[6]);
 	}
 
 	private void calculateHPandGold() {
@@ -197,9 +200,9 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 
 	private void finish() {
 		state = FINISHED;
-		imageEventText.updateBodyText("You pocketed all the #yGold. There's nothing of it left.");
+		imageEventText.updateBodyText(DESCRIPTIONS[5]);
 		imageEventText.clearAllDialogs();
-		imageEventText.setDialogOption("[Enter Portal] Go through it and see where you end up.");
+		imageEventText.setDialogOption(OPTIONS[8]);
 	}
 
 }

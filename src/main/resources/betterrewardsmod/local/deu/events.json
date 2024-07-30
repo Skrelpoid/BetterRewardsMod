@@ -1,0 +1,24 @@
+{
+	"betterrewardsmod:Better_Rewards_Event": {
+		"NAME": "Bessere Belohnungen",
+		"DESCRIPTIONS": [
+			"Du hast dich umgedreht, weil du ein seltsames Geräusch hinter dir vernommen hast. Du erblickst ein Portal und einen Topf voller #yGold. NL Dieses #yGold sieht fremdartig aus. So etwas hast du noch nie zuvor gesehen. Es kann wahrscheinlich nicht im Spire verwendet werden. NL Deine Intuition sagt dir, dass sich genau #y",
+			" #yMünzen in dem Topf befinden.",
+			"Es ist noch etwas #yGold übrig. ",
+			"Als du versuchst, den Topf mit #yGold aufzuheben, zerbricht er. Alle seltsamen #yMünzen sind auf den Boden gefallen. Du hebst ",
+			" #yMünzen auf. Leider sind einige der #yMünzen weggerollt und in einige #rStacheln geraten. ",
+			"Du hast das ganze #yGold eingesteckt. Es ist nichts mehr übrig."
+		],
+		"OPTIONS": [
+			"[Verlasse den gesicherten Bereich] Gehe zur Karte.",
+			"[Kehre um] Kehre zum Herzen zurück.",
+			"[Kehre um] Kehre zu Neow zurück.",
+			"[Münzen nehmen] #yStecke #ydas #yseltsame #yGold #yein.",
+			"[Mehr Gold nehmen] #rVerliere #r",
+			" #rTP. #yErhalte #y",
+			" #yGold.",
+			"[Portal betreten] Geh mit dem #yGold, das du hast.",
+			"[Portal betreten] Geh hindurch und sieh, wo du landest."
+		]
+	}
+}

@@ -3,6 +3,7 @@ package skrelpoid.betterrewards;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +26,13 @@ import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
+import com.megacrit.cardcrawl.localization.CardStrings;
+import com.megacrit.cardcrawl.localization.CharacterStrings;
+import com.megacrit.cardcrawl.localization.EventStrings;
+import com.megacrit.cardcrawl.localization.PotionStrings;
+import com.megacrit.cardcrawl.localization.PowerStrings;
+import com.megacrit.cardcrawl.localization.RelicStrings;
+import com.megacrit.cardcrawl.localization.TutorialStrings;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.Circlet;
 import com.megacrit.cardcrawl.rooms.ShopRoom;
@@ -42,6 +51,7 @@ import basemod.ModPanel;
 import basemod.ModToggleButton;
 import basemod.ReflectionHacks;
 import basemod.devcommands.history.History;
+import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
 import skrelpoid.betterrewards.events.BetterRewardsInfoEvent;
 import skrelpoid.betterrewards.shop.AbstractShopItem;
@@ -50,7 +60,7 @@ import skrelpoid.betterrewards.shop.RandomRareRelicItem;
 import skrelpoid.betterrewards.shop.RerollShopItem;
 
 @SpireInitializer
-public class BetterRewardsMod implements PostInitializeSubscriber {
+public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSubscriber {
 
 	public static final String[] UNWANTED_SPECIAL_RELICS = { "Circlet", "Red Circlet", "Spirit Poop" };
 	public static final String[] SCREEN_BOSS_RELICS = { "Calling Bell", "Orrery", "Tiny House" };
@@ -70,6 +80,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static int button;
 
 	public static final String MOD_NAME = "BetterRewards";
+	public static final String LOCALIZATION_FOLDER = "betterrewardsmod/local/";
 	public static final String DESCRIPTION = MOD_NAME;
 	public static final String AUTHOR = "Skrelpoid";
 
@@ -391,6 +402,56 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static boolean isCustomModEnabled() {
 		return customMod.selected || (!Settings.isDailyRun && !Settings.isTrial);
 	}
+	
+	private String maybeLoadLanguage() {
+		logger.info("Determining Language for BetterRewards");
+		switch (Settings.language) {
+			case DEU:
+				return "deu/";
+			case EPO:
+			case FRA:
+			case GRE:
+			case IND:
+			case ITA:
+			case JPN:
+			case KOR:
+			case NOR:
+			case POL:
+			case PTB:
+			case RUS:
+			case SPA:
+			case SRB:
+			case SRP:
+			case THA:
+			case TUR:
+			case UKR:
+			case WWW:
+			case ZHS:
+				return "zhs/";
+			case ZHT:
+				return "zht/";
+			case ENG:
+				return "eng/";
+			default:
+				return "eng/";
+		}
+	}
+
+	@Override
+	public void receiveEditStrings() {
+
+		String localLanguage = maybeLoadLanguage();
+
+		logger.info("Loading localization Strings for BetterRewards");
+		
+		BaseMod.loadCustomStrings(EventStrings.class,
+				loadJson(LOCALIZATION_FOLDER + localLanguage + "events.json"));
+	}
+	
+	// Copied from MadScienceMod
+		private static String loadJson(String jsonPath) {
+			return Gdx.files.internal(jsonPath).readString(String.valueOf(StandardCharsets.UTF_8));
+		}
 
 	// TODO FIX rewardsscreen in shop sometimes forces player to leave for now
 	// fixed by not giving relics that show reward screen
