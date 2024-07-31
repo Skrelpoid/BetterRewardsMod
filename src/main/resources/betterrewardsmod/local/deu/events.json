@@ -20,5 +20,60 @@
 			"[Portal betreten] Geh mit dem #yGold, das du hast.",
 			"[Portal betreten] Geh hindurch und sieh, wo du landest."
 		]
+	},
+	"betterrewardsmod:NeowEventPatches": {
+		"NAME": "",
+		"DESCRIPTIONS": [],
+		"OPTIONS": [
+			"[Kehre um]"
+		]
+	},
+	"betterrewardsmod:LootboxShopItem": {
+		"NAME": "Bessere Belohnungen Überraschungstruhe",
+		"DESCRIPTIONS": [
+			"Kann dir alles von Fluch bis Bossrelikt. Preis erhöht sich nach Kauf um 25. Die Chancen für gute Belohnungen erhöht sich nach jedem Kauf. Kann unendlich oft gekauft werden."
+		],
+		"OPTIONS": [
+			"Letztes Ergebnis",
+			"Du hast noch nicht gezogen! Traust du dich?",
+			"Du hast ein Bossrelikt erhalten: ",
+			"Du hast ein Relikt erhalten: ",
+			"Du hast ein besonderes Relikt erhalten: ",
+			"Du hast eine Karte erhalten: ",
+			"Du hast eine farblose Karte erhalten: ",
+			"Eine Karte wurde aus deinem Deck entfernt: ",
+			"Du hast keine Karte zum Entfernen :(",
+			"Eine Karte aus deinem Deck wurde transformiert: ",
+			" -> ",
+			"Du hast keine Karte zum Transformieren :(",
+			"Du hast ein Relikt verloren: ",
+			"Du hast kein Relikt zum Entfernen :(",
+			"Du hast 8 Schaden genommen.",
+			"Du hast Max TP verloren.",
+			"Du hast ",
+			" Gold verloren.",
+			"Du hast einen Fluch erhalten: "
+		]
+	},
+	"betterrewardsmod:RandomBossRelicItem": {
+		"NAME": "Bessere Belohnungen Laden Gegenstand",
+		"DESCRIPTIONS": [
+			"Erhalte ein zufälliges Bossrelikt. (Leider sind einige Relikte, die eine UI öffnen, nicht unterstützt)"
+		],
+		"OPTIONS": []
+	},
+	"betterrewardsmod:RandomRareRelicItem": {
+		"NAME": "Bessere Belohnungen Laden Gegenstand",
+		"DESCRIPTIONS": [
+			"Erhalte ein zufälliges Relikt. (Leider sind einige Relikte, die eine UI öffnen, nicht unterstützt)"
+		],
+		"OPTIONS": []
+	},
+	"betterrewardsmod:RerollShopItem": {
+		"NAME": "Bessere Belohnungen Erneut Würfeln",
+		"DESCRIPTIONS": [
+			"Würfel den Laden neu und befülle ihn wieder."
+		],
+		"OPTIONS": []
 	}
 }

@@ -20,5 +20,60 @@
 			"[Enter Portal] Leave with the #yGold you have.",
 			"[Enter Portal] Go through it and see where you end up."
 		]
+	},
+	"betterrewardsmod:NeowEventPatches": {
+		"NAME": "",
+		"DESCRIPTIONS": [],
+		"OPTIONS": [
+			"[Turn Around]"
+		]
+	},
+	"betterrewardsmod:LootboxShopItem": {
+		"NAME": "BetterRewards Lootbox",
+		"DESCRIPTIONS": [
+			"Can give you anything from a Curse to a Boss relic. Cost increases by 25. Chances for good rewards increase. Autorestocks."
+		],
+		"OPTIONS": [
+			"Last Roll",
+			"You didn't roll yet! Do you dare?",
+			"You got a Boss Relic: ",
+			"You got a Relic: ",
+			"You got a Special Relic: ",
+			"You got a Card: ",
+			"You got a Colorless Card: ",
+			"You lost a Card from your Deck: ",
+			"No card to remove :(",
+			"A Card from your Deck was transformed: ",
+			" -> ",
+			"No card to transform :(",
+			"You lost a relic: ",
+			"No relic to remove :(",
+			"You took 8 damage",
+			"You lost 5 Max HP.",
+			"You lost ",
+			" Gold.",
+			"You got a Curse: "
+		]
+	},
+	"betterrewardsmod:RandomBossRelicItem": {
+		"NAME": "BetterRewards Shop Item",
+		"DESCRIPTIONS": [
+			"Obtain a random Boss relic. (Sadly some relics that open screens are excluded)"
+		],
+		"OPTIONS": []
+	},
+	"betterrewardsmod:RandomRareRelicItem": {
+		"NAME": "BetterRewards Shop Item",
+		"DESCRIPTIONS": [
+			"Obtain a random Rare relic. (Sadly some relics that open screens are excluded)"
+		],
+		"OPTIONS": []
+	},
+	"betterrewardsmod:RerollShopItem": {
+		"NAME": "BetterRewards Reroll",
+		"DESCRIPTIONS": [
+			"Reroll and restock the Shop."
+		],
+		"OPTIONS": []
 	}
 }

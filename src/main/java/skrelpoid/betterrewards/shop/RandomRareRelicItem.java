@@ -1,15 +1,23 @@
 package skrelpoid.betterrewards.shop;
 
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 
 public class RandomRareRelicItem extends AbstractShopItem {
+	
+	public static final String ID = "betterrewardsmod:RandomRareRelicItem";
+	
+	private static final EventStrings eventStrings = CardCrawlGame.languagePack.getEventString(ID);
+	private static final String NAME = eventStrings.NAME;
+	private static final String[] DESCRIPTIONS = eventStrings.DESCRIPTIONS;
 
 	public RandomRareRelicItem(ShopScreen screen, float x, float y) {
-		super(screen, "shop/rareRelic.png", "BetterRewards Shop Item",
-				"Obtain a random Rare relic. (Sadly some relics that open screens are excluded)", 300, x, y);
+		super(screen, "shop/rareRelic.png", NAME,
+				DESCRIPTIONS[0], 300, x, y);
 	}
 
 	@Override

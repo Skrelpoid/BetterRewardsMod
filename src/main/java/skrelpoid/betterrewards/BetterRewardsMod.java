@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,13 +28,7 @@ import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
-import com.megacrit.cardcrawl.localization.CardStrings;
-import com.megacrit.cardcrawl.localization.CharacterStrings;
 import com.megacrit.cardcrawl.localization.EventStrings;
-import com.megacrit.cardcrawl.localization.PotionStrings;
-import com.megacrit.cardcrawl.localization.PowerStrings;
-import com.megacrit.cardcrawl.localization.RelicStrings;
-import com.megacrit.cardcrawl.localization.TutorialStrings;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.Circlet;
 import com.megacrit.cardcrawl.rooms.ShopRoom;
@@ -83,6 +79,8 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 	public static final String LOCALIZATION_FOLDER = "betterrewardsmod/local/";
 	public static final String DESCRIPTION = MOD_NAME;
 	public static final String AUTHOR = "Skrelpoid";
+	
+	public static final String FALLBACK_LANG = "eng/";
 
 	private static SpireConfig config;
 
@@ -402,39 +400,10 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 	public static boolean isCustomModEnabled() {
 		return customMod.selected || (!Settings.isDailyRun && !Settings.isTrial);
 	}
-	
+
 	private String maybeLoadLanguage() {
 		logger.info("Determining Language for BetterRewards");
-		switch (Settings.language) {
-			case DEU:
-				return "deu/";
-			case EPO:
-			case FRA:
-			case GRE:
-			case IND:
-			case ITA:
-			case JPN:
-			case KOR:
-			case NOR:
-			case POL:
-			case PTB:
-			case RUS:
-			case SPA:
-			case SRB:
-			case SRP:
-			case THA:
-			case TUR:
-			case UKR:
-			case WWW:
-			case ZHS:
-				return "zhs/";
-			case ZHT:
-				return "zht/";
-			case ENG:
-				return "eng/";
-			default:
-				return "eng/";
-		}
+		return Settings.language.toString().toLowerCase(Locale.ROOT) + "/";
 	}
 
 	@Override
@@ -443,15 +412,22 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 		String localLanguage = maybeLoadLanguage();
 
 		logger.info("Loading localization Strings for BetterRewards");
-		
-		BaseMod.loadCustomStrings(EventStrings.class,
-				loadJson(LOCALIZATION_FOLDER + localLanguage + "events.json"));
-	}
-	
-	// Copied from MadScienceMod
-		private static String loadJson(String jsonPath) {
-			return Gdx.files.internal(jsonPath).readString(String.valueOf(StandardCharsets.UTF_8));
+
+		final String json = loadJson(LOCALIZATION_FOLDER + localLanguage + "events.json");
+		if (json != null) {
+			BaseMod.loadCustomStrings(EventStrings.class, json);
+		} else {
+			BaseMod.loadCustomStrings(EventStrings.class, loadJson(LOCALIZATION_FOLDER + FALLBACK_LANG + "events.json"));
 		}
+	}
+
+	private static String loadJson(String jsonPath) {
+		FileHandle file = Gdx.files.internal(jsonPath);
+		if (file.exists()) {
+			return file.readString(String.valueOf(StandardCharsets.UTF_8));
+		}
+		return null;
+	}
 
 	// TODO FIX rewardsscreen in shop sometimes forces player to leave for now
 	// fixed by not giving relics that show reward screen

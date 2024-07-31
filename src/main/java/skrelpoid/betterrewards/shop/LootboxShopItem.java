@@ -8,10 +8,12 @@ import org.apache.logging.log4j.Logger;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.PowerTip;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
+import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.random.Random;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.BlackBlood;
@@ -24,6 +26,13 @@ import skrelpoid.betterrewards.BetterRewardsMod;
 
 public class LootboxShopItem extends AbstractShopItem {
 
+	public static final String ID = "betterrewardsmod:LootboxShopItem";
+	
+	private static final EventStrings eventStrings = CardCrawlGame.languagePack.getEventString(ID);
+	private static final String NAME = eventStrings.NAME;
+	private static final String[] DESCRIPTIONS = eventStrings.DESCRIPTIONS;
+	private static final String[] OPTIONS = eventStrings.OPTIONS;
+	
 	// good
 	public static final int BOSS_RELIC = 200;
 	public static final int RELIC = 1000;
@@ -64,11 +73,11 @@ public class LootboxShopItem extends AbstractShopItem {
 	private Logger logger = LogManager.getLogger(LootboxShopItem.class.getName());
 
 	public LootboxShopItem(ShopScreen shopScreen, float x, float y) {
-		super(shopScreen, "shop/lootbox.png", "BetterRewards Lootbox",
-				"Can give you anything from a Curse to a Boss relic. Cost increases by 25. Chances for good rewards increase. Autorestocks.",
+		super(shopScreen, "shop/lootbox.png", NAME,
+				DESCRIPTIONS[0],
 				50, x, y);
 		rng = new Random(Settings.seed);
-		tip = new PowerTip("Last Roll", "You didn't roll yet! Do you dare?");
+		tip = new PowerTip(OPTIONS[0], OPTIONS[1]);
 		tips.add(tip);
 		printChances();
 	}
@@ -131,7 +140,7 @@ public class LootboxShopItem extends AbstractShopItem {
 			}
 			AbstractDungeon.getCurrRoom().spawnRelicAndObtain(Settings.WIDTH / 2, Settings.HEIGHT / 2, relic);
 			logger.info("bossrelic");
-			displayLastRoll("You got a Boss Relic: " + relic.name + ".");
+			displayLastRoll(OPTIONS[2] + relic.name);
 			return;
 		}
 		reward += relic;
@@ -139,7 +148,7 @@ public class LootboxShopItem extends AbstractShopItem {
 			AbstractRelic relic = AbstractDungeon.returnRandomScreenlessRelic(AbstractDungeon.returnRandomRelicTier());
 			AbstractDungeon.getCurrRoom().spawnRelicAndObtain(Settings.WIDTH / 2, Settings.HEIGHT / 2, relic);
 			logger.info("relic");
-			displayLastRoll("You got a Relic: " + relic.name + ".");
+			displayLastRoll(OPTIONS[3] + relic.name);
 			return;
 		}
 		reward += specialRelic;
@@ -147,7 +156,7 @@ public class LootboxShopItem extends AbstractShopItem {
 			AbstractRelic relic = returnSpecialRelic();
 			AbstractDungeon.getCurrRoom().spawnRelicAndObtain(Settings.WIDTH / 2, Settings.HEIGHT / 2, relic);
 			logger.info("specialRelic");
-			displayLastRoll("You got a Special Relic: " + relic.name + ".");
+			displayLastRoll(OPTIONS[4] + relic.name);
 			return;
 		}
 		reward += coloredCard;
@@ -156,7 +165,7 @@ public class LootboxShopItem extends AbstractShopItem {
 			AbstractDungeon.effectList
 					.add(new ShowCardAndObtainEffect(card.makeCopy(), Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
 			logger.info("coloredCard");
-			displayLastRoll("You got a Card: " + card.name + ".");
+			displayLastRoll(OPTIONS[5] + card.name);
 			return;
 		}
 		reward += colorlessCard;
@@ -165,7 +174,7 @@ public class LootboxShopItem extends AbstractShopItem {
 			AbstractDungeon.effectList
 					.add(new ShowCardAndObtainEffect(card.makeCopy(), Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
 			logger.info("colorlessCard");
-			displayLastRoll("You got a Colorless Card: " + card.name + ".");
+			displayLastRoll(OPTIONS[6] + card.name );
 			return;
 		}
 		reward += removeRandomCard;
@@ -176,10 +185,10 @@ public class LootboxShopItem extends AbstractShopItem {
 				AbstractDungeon.effectList.add(new PurgeCardEffect(card));
 				player.masterDeck.removeCard(card);
 				logger.info("removeRandomCard");
-				displayLastRoll("You lost a Card from your Deck: " + name);
+				displayLastRoll(OPTIONS[7] + name);
 			} else {
 				logger.info("unable to removeRandomCard");
-				displayLastRoll("No card to remove :(");
+				displayLastRoll(OPTIONS[8]);
 			}
 			return;
 		}
@@ -195,10 +204,10 @@ public class LootboxShopItem extends AbstractShopItem {
 						new ShowCardAndObtainEffect(transformedCard.makeCopy(), Settings.WIDTH / 2.0F, Settings.HEIGHT / 2.0F));
 				String transformedName = transformedCard.name;
 				logger.info("transform");
-				displayLastRoll("A Card from your Deck was transformed: " + oldName + " -> " + transformedName + ".");
+				displayLastRoll(OPTIONS[9] + oldName + OPTIONS[10] + transformedName);
 			} else {
 				logger.info("unable to transform");
-				displayLastRoll("No card to transform :(");
+				displayLastRoll(OPTIONS[11]);
 			}
 			return;
 		}
@@ -209,10 +218,10 @@ public class LootboxShopItem extends AbstractShopItem {
 				String name = relic.name;
 				player.loseRelic(relic.relicId);
 				logger.info("removeRandomRelic");
-				displayLastRoll("You lost a relic: " + name + ".");
+				displayLastRoll(OPTIONS[12] + name);
 			} else {
 				logger.info("unable to removeRandomRelic");
-				displayLastRoll("No relic to remove :(");
+				displayLastRoll(OPTIONS[13]);
 			}
 			return;
 		}
@@ -220,14 +229,14 @@ public class LootboxShopItem extends AbstractShopItem {
 		if (roll < reward) {
 			player.damage(new DamageInfo(null, 8, DamageInfo.DamageType.HP_LOSS));
 			logger.info("takeDamage");
-			displayLastRoll("You took 8 damage.");
+			displayLastRoll(OPTIONS[14]);
 			return;
 		}
 		reward += loseMaxHp;
 		if (roll < reward) {
 			player.decreaseMaxHealth(5);
 			logger.info("loseMaxHp");
-			displayLastRoll("You lost 5 Max HP.");
+			displayLastRoll(OPTIONS[15]);
 			return;
 		}
 		reward += loseGold;
@@ -240,7 +249,7 @@ public class LootboxShopItem extends AbstractShopItem {
 				player.gold = 0;
 			}
 			logger.info("loseGold");
-			displayLastRoll("You lost " + goldLost + " Gold.");
+			displayLastRoll(OPTIONS[16] + goldLost + OPTIONS[17]);
 			return;
 		}
 		reward += curse;
@@ -249,14 +258,14 @@ public class LootboxShopItem extends AbstractShopItem {
 			AbstractDungeon.topLevelEffects
 					.add(new ShowCardAndObtainEffect(card, Settings.WIDTH / 2, Settings.HEIGHT / 2));
 			logger.info("curse");
-			displayLastRoll("You got a Curse: " + card.name + ".");
+			displayLastRoll(OPTIONS[18] + card.name);
 			return;
 		}
 		// if reached this point, something went wrong
 		logger.info("This should not have happened. Giving player relic as backup");
 		AbstractRelic relic = AbstractDungeon.returnRandomScreenlessRelic(AbstractDungeon.returnRandomRelicTier()).makeCopy();
 		AbstractDungeon.getCurrRoom().spawnRelicAndObtain(Settings.WIDTH / 2, Settings.HEIGHT / 2, relic);
-		displayLastRoll("You got a Relic: " + relic.name + ".");
+		displayLastRoll(OPTIONS[3] + relic.name);
 	}
 
 	private AbstractCard getRandomDeckCard(boolean purge) {
