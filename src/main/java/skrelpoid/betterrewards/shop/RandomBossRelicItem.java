@@ -1,17 +1,25 @@
 package skrelpoid.betterrewards.shop;
 
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 
 import skrelpoid.betterrewards.BetterRewardsMod;
 
 @Deprecated
 public class RandomBossRelicItem extends AbstractShopItem {
+	
+	public static final String ID = "betterrewardsmod:RandomBossRelicItem";
+	
+	private static final EventStrings eventStrings = CardCrawlGame.languagePack.getEventString(ID);
+	private static final String NAME = eventStrings.NAME;
+	private static final String[] DESCRIPTIONS = eventStrings.DESCRIPTIONS;
 
 	public RandomBossRelicItem(ShopScreen screen, float x, float y) {
-		super(screen, "shop/bossRelic.png", "BetterRewards Shop Item",
-				"Obtain a random Boss relic. (Sadly some relics that open screens are excluded)", 800, x, y);
+		super(screen, "shop/bossRelic.png", NAME,
+				DESCRIPTIONS[0], 800, x, y);
 	}
 
 	@Override

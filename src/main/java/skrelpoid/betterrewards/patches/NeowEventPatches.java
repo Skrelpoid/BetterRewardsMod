@@ -6,6 +6,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.RoomEventDialog;
@@ -34,7 +35,8 @@ public class NeowEventPatches {
 			if (BetterRewardsMod.isCustomModEnabled() && !BetterRewardsMod.isNeowDone && BetterRewardsMod.shouldShowButton) {
 				BetterRewardsMod.shouldShowButton = false;
 				BetterRewardsMod.button = RoomEventDialog.optionList.size();
-				room.event.roomEventText.addDialogOption("[Turn Around]");
+				final String translatedText = CardCrawlGame.languagePack.getEventString("betterrewardsmod:NeowEventPatches").OPTIONS[0];
+				room.event.roomEventText.addDialogOption(translatedText);
 			}
 		}
 	}

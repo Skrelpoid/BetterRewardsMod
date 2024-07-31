@@ -3,15 +3,19 @@ package skrelpoid.betterrewards;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +28,7 @@ import com.megacrit.cardcrawl.events.AbstractEvent;
 import com.megacrit.cardcrawl.events.GenericEventDialog;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.RelicLibrary;
+import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.relics.Circlet;
 import com.megacrit.cardcrawl.rooms.ShopRoom;
@@ -42,6 +47,7 @@ import basemod.ModPanel;
 import basemod.ModToggleButton;
 import basemod.ReflectionHacks;
 import basemod.devcommands.history.History;
+import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
 import skrelpoid.betterrewards.events.BetterRewardsInfoEvent;
 import skrelpoid.betterrewards.shop.AbstractShopItem;
@@ -50,7 +56,7 @@ import skrelpoid.betterrewards.shop.RandomRareRelicItem;
 import skrelpoid.betterrewards.shop.RerollShopItem;
 
 @SpireInitializer
-public class BetterRewardsMod implements PostInitializeSubscriber {
+public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSubscriber {
 
 	public static final String[] UNWANTED_SPECIAL_RELICS = { "Circlet", "Red Circlet", "Spirit Poop" };
 	public static final String[] SCREEN_BOSS_RELICS = { "Calling Bell", "Orrery", "Tiny House" };
@@ -70,8 +76,11 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 	public static int button;
 
 	public static final String MOD_NAME = "BetterRewards";
+	public static final String LOCALIZATION_FOLDER = "betterrewardsmod/local/";
 	public static final String DESCRIPTION = MOD_NAME;
 	public static final String AUTHOR = "Skrelpoid";
+	
+	public static final String FALLBACK_LANG = "eng/";
 
 	private static SpireConfig config;
 
@@ -390,6 +399,34 @@ public class BetterRewardsMod implements PostInitializeSubscriber {
 
 	public static boolean isCustomModEnabled() {
 		return customMod.selected || (!Settings.isDailyRun && !Settings.isTrial);
+	}
+
+	private String maybeLoadLanguage() {
+		logger.info("Determining Language for BetterRewards");
+		return Settings.language.toString().toLowerCase(Locale.ROOT) + "/";
+	}
+
+	@Override
+	public void receiveEditStrings() {
+
+		String localLanguage = maybeLoadLanguage();
+
+		logger.info("Loading localization Strings for BetterRewards");
+
+		final String json = loadJson(LOCALIZATION_FOLDER + localLanguage + "events.json");
+		if (json != null) {
+			BaseMod.loadCustomStrings(EventStrings.class, json);
+		} else {
+			BaseMod.loadCustomStrings(EventStrings.class, loadJson(LOCALIZATION_FOLDER + FALLBACK_LANG + "events.json"));
+		}
+	}
+
+	private static String loadJson(String jsonPath) {
+		FileHandle file = Gdx.files.internal(jsonPath);
+		if (file.exists()) {
+			return file.readString(String.valueOf(StandardCharsets.UTF_8));
+		}
+		return null;
 	}
 
 	// TODO FIX rewardsscreen in shop sometimes forces player to leave for now
