@@ -1,1 +1,79 @@
-
+{
+	"betterrewardsmod:Better_Rewards_Event": {
+		"NAME": "Better Rewards",
+		"DESCRIPTIONS": [
+			"你转过身，因为你听到背后有一道奇怪的声音。你看到一个传送门和一罐装满了#y金币 的罐子。 NL 这些#y金币看起来非常陌生。你从未见过这样的东西。它可能无法在尖塔中使用。 NL 你的直觉告诉你，罐子里正好有#y",
+			" #y金币。",
+			"这里还有一些#y金币 剩下。",
+			"当你试图捡起这罐#y金币 时，它碎了。 所有奇怪的#y金币 都掉到了地上。你捡起了#y",
+			" #y金币。不幸的是，一些#y金币滚到了尖刺中。 ",
+			"你将所有的#y金币 都放进口袋了，这里没有剩下任何东西。."
+		],
+		"OPTIONS": [
+			"[离开] ",
+			"[转身] 返回至心脏。",
+			"[转身] 返回至捏奥。",
+			"[拿走金币] #y将这些奇怪的金币装进口袋。",
+			"[拿走更多金币] #r失去 #r",
+			" #r生命， #y获得#y",
+			"#y金币。",
+			"[进入传送门] 带着你已有的#y金币 离开。",
+			"[进入传送门] 穿过它一探究竟。"
+		]
+	},
+	"betterrewardsmod:NeowEventPatches": {
+		"NAME": "",
+		"DESCRIPTIONS": [],
+		"OPTIONS": [
+			"[转身]"
+		]
+	},
+	"betterrewardsmod:LootboxShopItem": {
+		"NAME": "BetterRewards：战利品宝箱",
+		"DESCRIPTIONS": [
+			"随机给予你从诅咒到Boss遗物的任何东西。每购买一次会涨价#b25金币 ，并增加获取稀有奖励的概率。自动补货。"
+		],
+		"OPTIONS": [
+			"上次购买结果",
+			"你还没有购买过! 你敢试试吗?",
+			"你得到了一个Boss遗物: ",
+			"你得到了一个遗物: ",
+			"你得到了一个事件遗物: ",
+			"你得到了一张卡牌: ",
+			"你得到了一张无色卡牌: ",
+			"移除了牌组中的一张牌: ",
+			"没有可以移除的卡牌 :(",
+			"变化了牌组中的一张牌: ",
+			" -> ",
+			"没有可以变化的卡牌 :(",
+			"你失去了一个遗物: ",
+			"没有遗物可以失去 :(",
+			"你失去 8 生命。",
+			"你失去 5 最大生命。",
+			"你失去 ",
+			" 金币。",
+			"被诅咒: "
+		]
+	},
+	"betterrewardsmod:RandomBossRelicItem": {
+		"NAME": "BetterRewards：商店物品",
+		"DESCRIPTIONS": [
+			"获得一个随机的Boss遗物。 (遗憾的是，一些需要打开交互界面的遗物不包括在内)"
+		],
+		"OPTIONS": []
+	},
+	"betterrewardsmod:RandomRareRelicItem": {
+		"NAME": "BetterRewards：商店物品",
+		"DESCRIPTIONS": [
+			"获得一个随机的稀有遗物。 (遗憾的是，一些需要打开交互界面的遗物不包括在内)"
+		],
+		"OPTIONS": []
+	},
+	"betterrewardsmod:RerollShopItem": {
+		"NAME": "BetterRewards：刷新",
+		"DESCRIPTIONS": [
+			"重置商店并补充商品。"
+		],
+		"OPTIONS": []
+	}
+}
