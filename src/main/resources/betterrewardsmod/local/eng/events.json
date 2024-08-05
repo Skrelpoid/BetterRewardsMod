@@ -75,5 +75,12 @@
 			"Reroll and restock the Shop."
 		],
 		"OPTIONS": []
+	},
+	"betterrewardsmod:Trial": {
+		"NAME": "BetterRewards",
+		"DESCRIPTIONS": [
+			"Get the Better Rewards event at the start of your run"
+		],
+		"OPTIONS": []
 	}
 }

@@ -75,5 +75,12 @@
 			"刷新并补充所有商品。"
 		],
 		"OPTIONS": []
+	},
+	"betterrewardsmod:Trial": {
+		"NAME": "BetterRewards",
+		"DESCRIPTIONS": [
+			"Get the Better Rewards event at the start of your run"
+		],
+		"OPTIONS": []
 	}
 }

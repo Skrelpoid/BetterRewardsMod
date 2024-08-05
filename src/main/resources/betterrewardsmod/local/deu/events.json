@@ -75,5 +75,12 @@
 			"Würfel den Laden neu und befülle ihn wieder."
 		],
 		"OPTIONS": []
+	},
+	"betterrewardsmod:Trial": {
+		"NAME": "BessereBelohnungen",
+		"DESCRIPTIONS": [
+			"Starte deinen Run mit dem Bessere Belohnungen Ereignis"
+		],
+		"OPTIONS": []
 	}
 }
