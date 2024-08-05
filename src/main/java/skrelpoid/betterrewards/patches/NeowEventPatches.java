@@ -32,11 +32,16 @@ public class NeowEventPatches {
 		@SpirePostfixPatch
 		public static void Postfix(NeowRoom room, boolean b) {
 			BetterRewardsMod.isNeowDone = b;
-			if (BetterRewardsMod.isCustomModEnabled() && !BetterRewardsMod.isNeowDone && BetterRewardsMod.shouldShowButton) {
+			if (BetterRewardsMod.customModeOnOrNotDailyNotTrial() && !BetterRewardsMod.isNeowDone && BetterRewardsMod.shouldShowButton) {
 				BetterRewardsMod.shouldShowButton = false;
-				BetterRewardsMod.button = RoomEventDialog.optionList.size();
 				final String translatedText = CardCrawlGame.languagePack.getEventString("betterrewardsmod:NeowEventPatches").OPTIONS[0];
-				room.event.roomEventText.addDialogOption(translatedText);
+				if (BetterRewardsMod.isCustomModRun()) {
+					BetterRewardsMod.button = 0;
+					room.event.roomEventText.updateDialogOption(0, translatedText);
+				} else {
+					BetterRewardsMod.button = RoomEventDialog.optionList.size();
+					room.event.roomEventText.addDialogOption(translatedText);
+				}
 			}
 		}
 	}
@@ -85,7 +90,8 @@ public class NeowEventPatches {
 	// screenNum = 0, 1 or 2 mean talk option
 	// 10 is only ok for trial (Custom Mode) I think
 	private static boolean acceptableScreenNum(int sn) {
-		return sn == 0 || sn == 1 || sn == 2 || (Settings.isTrial && sn == 10);
+		return sn == 0 || sn == 1 || sn == 2 ||
+				(Settings.isTrial && sn == 10 && BetterRewardsMod.customMod != null && BetterRewardsMod.customMod.selected  );
 	}
 
 	private static void maybeStartRewards(AbstractEvent e, int buttonPressed, Field screenNumField, int sn)

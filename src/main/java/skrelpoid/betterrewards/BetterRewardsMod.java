@@ -106,7 +106,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 	}
 
 	public static boolean shouldShowInfo() {
-		return isGettingRewards && !alreadyStartedRewards && !alreadyGotRewards;
+		return customModeOnOrNotDailyNotTrial() && isGettingRewards && !alreadyStartedRewards && !alreadyGotRewards;
 	}
 
 	public static boolean isCurrentlyInShop() {
@@ -397,8 +397,12 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 		ReflectionHacks.<List<CustomMod>>getPrivate(screen, CustomModeScreen.class, "modList").add(customMod);
 	}
 
-	public static boolean isCustomModEnabled() {
-		return customMod.selected || (!Settings.isDailyRun && !Settings.isTrial);
+	public static boolean customModeOnOrNotDailyNotTrial() {
+		return customMod == null || customMod.selected || (!Settings.isDailyRun && !Settings.isTrial);
+	}
+	
+	public static boolean isCustomModRun() {
+		return customMod != null && customMod.selected;
 	}
 
 	private String maybeLoadLanguage() {
