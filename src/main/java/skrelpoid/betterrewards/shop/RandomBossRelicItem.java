@@ -18,7 +18,7 @@ public class RandomBossRelicItem extends AbstractShopItem {
 	private static final String[] DESCRIPTIONS = eventStrings.DESCRIPTIONS;
 
 	public RandomBossRelicItem(ShopScreen screen, float x, float y) {
-		super(screen, "shop/bossRelic.png", NAME,
+		super(screen, BetterRewardsMod.BASE_RESOURCE_FOLDER + "/shop/bossRelic.png", NAME,
 				DESCRIPTIONS[0], 800, x, y);
 	}
 

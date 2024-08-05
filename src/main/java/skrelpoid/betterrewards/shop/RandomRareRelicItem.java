@@ -7,6 +7,8 @@ import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 
+import skrelpoid.betterrewards.BetterRewardsMod;
+
 public class RandomRareRelicItem extends AbstractShopItem {
 	
 	public static final String ID = "betterrewardsmod:RandomRareRelicItem";
@@ -16,7 +18,7 @@ public class RandomRareRelicItem extends AbstractShopItem {
 	private static final String[] DESCRIPTIONS = eventStrings.DESCRIPTIONS;
 
 	public RandomRareRelicItem(ShopScreen screen, float x, float y) {
-		super(screen, "shop/rareRelic.png", NAME,
+		super(screen, BetterRewardsMod.BASE_RESOURCE_FOLDER + "/shop/rareRelic.png", NAME,
 				DESCRIPTIONS[0], 300, x, y);
 	}
 

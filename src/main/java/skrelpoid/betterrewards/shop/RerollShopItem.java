@@ -15,7 +15,7 @@ public class RerollShopItem extends AbstractShopItem {
 	private static final String[] DESCRIPTIONS = eventStrings.DESCRIPTIONS;
 
 	public RerollShopItem(ShopScreen screen, float x, float y) {
-		super(screen, "shop/reroll.png", NAME, DESCRIPTIONS[0], 125, x, y);
+		super(screen, BetterRewardsMod.BASE_RESOURCE_FOLDER + "/shop/reroll.png", NAME, DESCRIPTIONS[0], 125, x, y);
 	}
 
 	@Override

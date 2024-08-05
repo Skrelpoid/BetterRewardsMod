@@ -48,7 +48,7 @@ public class BetterRewardsInfoEvent extends AbstractImageEvent {
 	private int loseHP;
 
 	public BetterRewardsInfoEvent() {
-		super(NAME, getBody(), "event/betterRewardsEvent.jpg");
+		super(NAME, getBody(), BetterRewardsMod.BASE_RESOURCE_FOLDER + "/event/betterRewardsEvent.jpg");
 
 		imageEventText.clearAllDialogs();
 		imageEventText.clearRemainingOptions();

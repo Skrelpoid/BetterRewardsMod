@@ -73,7 +73,7 @@ public class LootboxShopItem extends AbstractShopItem {
 	private Logger logger = LogManager.getLogger(LootboxShopItem.class.getName());
 
 	public LootboxShopItem(ShopScreen shopScreen, float x, float y) {
-		super(shopScreen, "shop/lootbox.png", NAME,
+		super(shopScreen, BetterRewardsMod.BASE_RESOURCE_FOLDER + "/shop/lootbox.png", NAME,
 				DESCRIPTIONS[0],
 				50, x, y);
 		rng = new Random(Settings.seed);

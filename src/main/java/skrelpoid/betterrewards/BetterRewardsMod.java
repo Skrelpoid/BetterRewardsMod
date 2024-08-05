@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.megacrit.cardcrawl.cards.AbstractCard;
+import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractEvent;
@@ -76,7 +77,8 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 	public static int button;
 
 	public static final String MOD_NAME = "BetterRewards";
-	public static final String LOCALIZATION_FOLDER = "betterrewardsmod/local/";
+	public static final String BASE_RESOURCE_FOLDER = "betterrewardsmod";
+	public static final String LOCALIZATION_FOLDER = BASE_RESOURCE_FOLDER + "/local/";
 	public static final String DESCRIPTION = MOD_NAME;
 	public static final String AUTHOR = "Skrelpoid";
 	
@@ -354,7 +356,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 				FontHelper.buttonLabelFont, isFunMode, panel, (l) -> {
 				}, BetterRewardsMod::funToggle);
 		panel.addUIElement(fun);
-		BaseMod.registerModBadge(new Texture("modBadge.png"), MOD_NAME, AUTHOR, DESCRIPTION, panel);
+		BaseMod.registerModBadge(new Texture(BASE_RESOURCE_FOLDER + "/modBadge.png"), MOD_NAME, AUTHOR, DESCRIPTION, panel);
 
 	}
 
@@ -384,8 +386,9 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 
 	public static void addCustomModeMods(CustomModeScreen screen, CustomMod sealedMod, CustomMod draftMod) {
 		customMod = new CustomMod("BetterRewards", "b", false);
-		customMod.name = "BetterRewards";
-		customMod.description = "Get the Better Rewards event at the start of your run";
+		EventStrings translation = CardCrawlGame.languagePack.getEventString("betterrewardsmod:Trial");
+		customMod.name = translation.NAME;
+		customMod.description = translation.DESCRIPTIONS[0];
 		String label = FontHelper.colorString("[" + customMod.name + "]", customMod.color) + " "
 				+ customMod.description;
 		ReflectionHacks.setPrivate(customMod, CustomMod.class, "label", label);
