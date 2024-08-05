@@ -352,7 +352,8 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 	public void receivePostInitialize() {
 		loadSettings();
 		ModPanel panel = new ModPanel();
-		ModLabeledToggleButton fun = new ModLabeledToggleButton("Enable FUN mode (No HP cost)", X, Y, Color.WHITE,
+		EventStrings translation = CardCrawlGame.languagePack.getEventString("betterrewardsmod:Settings");
+		ModLabeledToggleButton fun = new ModLabeledToggleButton(translation.OPTIONS[0], X, Y, Color.WHITE,
 				FontHelper.buttonLabelFont, isFunMode, panel, (l) -> {
 				}, BetterRewardsMod::funToggle);
 		panel.addUIElement(fun);

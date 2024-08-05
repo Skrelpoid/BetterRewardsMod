@@ -82,5 +82,12 @@
 			"Starte deinen Run mit dem Bessere Belohnungen Ereignis"
 		],
 		"OPTIONS": []
+	},
+	"betterrewardsmod:Settings": {
+		"NAME": "",
+		"DESCRIPTIONS": [],
+		"OPTIONS": [
+			"Spaß-Modus aktivieren (Keine TP-Kosten)"
+		]
 	}
 }

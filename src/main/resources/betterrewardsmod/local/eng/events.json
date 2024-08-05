@@ -82,5 +82,12 @@
 			"Get the Better Rewards event at the start of your run"
 		],
 		"OPTIONS": []
+	},
+	"betterrewardsmod:Settings": {
+		"NAME": "",
+		"DESCRIPTIONS": [],
+		"OPTIONS": [
+			"Enable FUN mode (No HP cost)"
+		]
 	}
 }
