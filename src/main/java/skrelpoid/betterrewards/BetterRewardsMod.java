@@ -398,6 +398,7 @@ public class BetterRewardsMod implements PostInitializeSubscriber, EditStringsSu
 		ReflectionHacks.setPrivate(customMod, CustomMod.class, "height", height);
 		customMod.setMutualExclusionPair(sealedMod);
 		customMod.setMutualExclusionPair(draftMod);
+		// TODO we could do this dynamically and just exclude our mod with sealed and all its exclusions e.g.
 		ReflectionHacks.<List<CustomMod>>getPrivate(screen, CustomModeScreen.class, "modList").add(customMod);
 	}
 
